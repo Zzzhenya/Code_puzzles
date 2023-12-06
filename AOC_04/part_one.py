@@ -1,55 +1,40 @@
 import math
+import pandas as pd
 
 with open('input.txt', 'r') as input_data:
     rows = [line.strip() for line in input_data.readlines()]
 
-humtoloc = {}
-i = 0
-for row in rows:
-    if row == "humidity-to-location map:":
+def get_dict(word, rows):
+    d = {}
+    i = 0
+    for row in rows:
+        if row == word:
+            i += 1
+            break
         i += 1
-        break
-    i += 1
-j = 0
-for row in rows:
-    if (j >= i):
-        humtoloc[i] = []
-        humtoloc[i] = row.split(' ')
-        humtoloc[i] = [int(i) for i in humtoloc[i]]
-        i += 1
-    j += 1
+    j = 0
+    for row in rows:
+        if j >= i :
+            if row == "":
+                break
+            d[i] = []
+            d[i] = row.split(' ')
+            d[i] = [int(i) for i in d[i]]
+            i += 1
+        j += 1
+    return (d)
 
+seedtosoil = get_dict("seed-to-soil map:", rows)
+
+soiltofert = get_dict("soil-to-fertilizer map:", rows)
+
+fertowater = get_dict("fertilizer-to-water map:", rows)
+
+watertolite = get_dict("water-to-light map:", rows)
+
+litetotemp = get_dict("light-to-temperature map:", rows)
+
+temptohum = get_dict("temperature-to-humidity map:", rows)
+
+humtoloc = get_dict("humidity-to-location map:", rows)
 print(humtoloc)
-
-'''
-i = 0
-val = 0;
-for row in rows:
-    winning = []
-    num2 = []
-    num = row.split(':')[1]
-    winning = num.split('|')[0].split()
-    mynum = (num.split('|')[1]).split()
-
-    print(row)
-    winning1 = []
-    for win in winning:
-        winning1.append(int(win))
-
-    mynum1 = []
-    for num in mynum:
-        mynum1.append(int(num))
-
-    count = 0;
-    a = []
-    for win in winning1:
-        for num in mynum1:
-            if win == num:
-                a.append(win)
-                count += 1
-    if (count > 0):
-        val += math.pow(2, count - 1)
-    else:
-        val += 0
-    i += 1
-print ("val: ", val)'''
