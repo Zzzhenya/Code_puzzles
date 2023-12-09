@@ -23,7 +23,7 @@ def get_diff(num, line, count):
 
 total = 0
 for line in lines:
-	val = get_diff(21, line, 0)
+	val = get_diff(len(line), line, 0)
 	final_val = line[len(line) - 1] + val
 	total += final_val
 
