@@ -50,7 +50,6 @@ int main(int argc, char **argv)
 	ssize_t linelen;
 	ssize_t area = 0;
 	ssize_t len = 0;
-	int i = 0;
 	FILE	*fp;
 
 	if (argc != 2)
