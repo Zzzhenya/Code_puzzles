@@ -125,14 +125,10 @@ int combo(int digits, int *arr)
 
 int main(void)
 {
-    //uint8_t result[16];
     uint8_t result[16];
-    //char *str = "abcdef609043";
     char *str = "yzbqklnj";
-    //char *str = "abcdef";
     char *num = NULL;
     int *arr = NULL;
-    //uint8_t **arr = NULL; 
     int i = 0;
     int size = 0;
     int j = 1;
@@ -154,7 +150,7 @@ int main(void)
             strcpy(new, str);
             num = ft_itoa(arr[i]);
             strlcat(new, num, len + 100);
-            //printf("%s : %s\n",new, num);
+            free (num);
             md5String(new, result);
             if (has_45zero((uint8_t *)result))
             {

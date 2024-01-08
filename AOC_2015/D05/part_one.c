@@ -91,7 +91,6 @@ int main(int argc, char **argv)
 	char *line = NULL;
 	size_t linecap = 0;
 	ssize_t linelen;
-	ssize_t area = 0;
 	ssize_t len = 0;
 	int count = 0;
 	int count2 = 0;
