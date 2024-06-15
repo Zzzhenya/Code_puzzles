@@ -7,36 +7,37 @@
 #define WIDTH 1000
 #define HEIGHT 1000
 
-void    switch_toggle(int **buf, char *start, char *end)
+void    switch_on_off(size_t **buf, char *start, char *end, int val)
 {
     int x0 = 0;
     int y0 = 0;
     int x1 = 0;
     int y1 = 0;
     int ytemp = 0;
-    x0 = atoi(strtok(start, ","));
-    y0 = atoi(strtok(NULL, ","));
-    x1 = atoi(strtok(end, ","));
-    y1 = atoi(strtok(NULL, ","));
+    x0 = (size_t)atoi(strtok(start, ","));
+    y0 = (size_t)atoi(strtok(NULL, ","));
+    x1 = (size_t)atoi(strtok(end, ","));
+    y1 = (size_t)atoi(strtok(NULL, ","));
     ytemp = y0;
     while (x0 <= x1)
     {
         y0 = ytemp;
-        // printf("ytemp: %d\n", ytemp);
-        // printf("x0: %d\n", x0);
         while (y0 <= y1)
         {
-            if ((*buf)[(x0 * WIDTH) + y0] == 1)
-                (*buf)[(x0 * WIDTH) + y0] = 0;
+            if (val < 0)
+            {
+                if ((*buf)[(x0 * WIDTH) + y0] > 0)
+                    (*buf)[(x0 * WIDTH) + y0] += val;
+            }
             else
-                (*buf)[(x0 * WIDTH) + y0] = 1;
+                (*buf)[(x0 * WIDTH) + y0] += val;
             y0 += 1;
         }
         x0 += 1;
     }
 }
 
-void    exec_toggle(int **buf, char *line)
+void    exec_toggle(size_t **buf, char *line)
 {
     char *start = NULL;
     char *end = NULL;
@@ -44,36 +45,10 @@ void    exec_toggle(int **buf, char *line)
     start = strtok(NULL, " ");
     strtok(NULL, " ");
     end = strtok(NULL, " ");
-    switch_toggle(buf, start, end);
+    switch_on_off(buf, start, end, 2);
 }
 
-void    switch_on_off(int **buf, char *start, char *end, int val)
-{
-    //(void)buf;
-    int x0 = 0;
-    int y0 = 0;
-    int x1 = 0;
-    int y1 = 0;
-    int ytemp = 0;
-    x0 = atoi(strtok(start, ","));
-    y0 = atoi(strtok(NULL, ","));
-    x1 = atoi(strtok(end, ","));
-    y1 = atoi(strtok(NULL, ","));
-    ytemp = y0;
-    while (x0 <= x1)
-    {
-        y0 = ytemp;
-        while (y0 <= y1)
-        {
-            (*buf)[(x0 * WIDTH) + y0] = val;
-            y0 += 1;
-        }
-        x0 += 1;
-    }
-}
-
-
-void    exec_turn(int **buf, char *line)
+void    exec_turn(size_t **buf, char *line)
 {
     char *start = NULL;
     char *end = NULL;
@@ -82,7 +57,6 @@ void    exec_turn(int **buf, char *line)
         start = strtok(NULL, " ");
         strtok(NULL, " ");
         end = strtok(NULL, " ");
-        // printf("%s\t%s: \t", start, end);
         switch_on_off(buf, start, end, 1);
         return;
     }
@@ -91,13 +65,12 @@ void    exec_turn(int **buf, char *line)
         start = strtok(NULL, " ");
         strtok(NULL, " ");
         end = strtok(NULL, " ");
-        // printf("%s\t%s: \t", start, end);
-        switch_on_off(buf, start, end, 0);
+        switch_on_off(buf, start, end, -1);
         return;
     }
 }
 
-void    get_range_calc(int **buf, char *file)
+void    get_range_calc(size_t **buf, char *file)
 {
     char *line = NULL;
 	size_t linecap = 0;
@@ -128,31 +101,29 @@ void    get_range_calc(int **buf, char *file)
         i ++;
         first = NULL;
 	}
-    // free (arr);
-	fclose(fp);
-}
-
-int main(int argc, char **argv)
-{
-    int *buf;
-
-    if (argc != 2)
-        return (0);
-    buf = (int *)malloc(sizeof(int) * (WIDTH * HEIGHT));
-    memset(buf, 0, 100);
-    get_range_calc(&buf, argv[1]);
-    int i = 0;
+    i = 0;
     int sum = 0;
     while (i < (WIDTH * HEIGHT))
     {
-        if ((buf)[i] == 1)
-            sum ++;
-        // printf("%d", (*buf)[i]);
+        sum += (*buf)[i];
+        // printf("%zu", (*buf)[i]);
         // if ((i + 1)%WIDTH == 0)
         //     printf("\n");
         i ++;
     }
     printf("result: %d\n", sum);
+	fclose(fp);
+}
+
+int main(int argc, char **argv)
+{
+    size_t *buf;
+
+    if (argc != 2)
+        return (0);
+    buf = (size_t *)malloc(sizeof(size_t) * (WIDTH * HEIGHT));
+    memset(buf, 0, 100);
+    get_range_calc(&buf, argv[1]);
     free(buf);
     return (0);
 }
