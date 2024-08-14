@@ -80,15 +80,16 @@ int execute(char **argv, int i, char **env)
 {
 	int status = 0;
 	int fd[2];
+	int has_a_pipe = last_char_is_a_pipe(argv, i);
 
 	// handle cd
-	if (!last_char_is_a_pipe(argv, i) && !strcmp(*argv, "cd"))
+	if (!has_a_pipe && !strcmp(*argv, "cd"))
 	{
 		status = exec_cd(argv, i);
 		return (status);
 	}
 	// make pipe handle pipe errors
-	if (last_char_is_a_pipe(argv, i) && pipe(fd) == -1)
+	if (has_a_pipe && pipe(fd) == -1)
 	{
 		ft_error("error: fatal\n");
 		return (1);
@@ -99,7 +100,7 @@ int execute(char **argv, int i, char **env)
 	{
 		// NULL terminate argv
 		argv[i] = 0;
-		if (last_char_is_a_pipe(argv, i) && setup_pipe_write(fd) == -1)
+		if (has_a_pipe && setup_pipe_write(fd) == -1)
 		{
 			ft_error("error: fatal\n");
 			return (1);
@@ -115,12 +116,12 @@ int execute(char **argv, int i, char **env)
 		ft_error("\n");
 		return (1);
 	}
-	//if (pid != 0)
+	if (pid != 0)
 	{
 		// wait for child
 		waitpid(pid, &status, 0);
     	// If the command includes a pipe and setting up the pipe fails, return an error
-    	if (last_char_is_a_pipe(argv, i) && setup_pipe_read(fd) == -1)
+    	if (has_a_pipe && setup_pipe_read(fd) == -1)
     	{
     		ft_error("error: fatal\n");
         	return (1);
