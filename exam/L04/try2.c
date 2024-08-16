@@ -80,7 +80,7 @@ int main(int argc, char **argv, char **envp)
 
 	if (argc <= 1)
 		return (status);
-	i ++;
+	i ++; // should I?
 	while (argv[i] && argv[i + 1])
 	{
 		i ++;
