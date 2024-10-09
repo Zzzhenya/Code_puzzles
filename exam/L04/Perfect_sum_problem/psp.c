@@ -7,12 +7,25 @@ given array with a sum equal to a given sum.
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 typedef struct	s_sum
 {
 	int val;
 	int check;
+	char *str;
 } 				t_sum;
+
+size_t ft_strlen(char *str)
+{
+	size_t len = 0;
+
+	if (!str)
+		return (len);
+	while (str[len] != '\0')
+		len++;
+	return (len);
+}
 
 int ft_atoi(char *str)
 {
@@ -56,6 +69,7 @@ t_sum *get_array(char **arr, int size)
 	{
 		int_arr[i].val = ft_atoi(arr[i]);
 		int_arr[i].check = 0;
+		int_arr[i].str = arr[i];
 		i++;
 	}
 	return (int_arr);
@@ -76,9 +90,12 @@ void	print_arr(t_sum *arr, int size)
 	int i = 0;
 	while (i < size)
 	{
-		printf("%d ", arr[i].val);
+		//printf("%d ", arr[i].val);
+		write (1, arr[i].str, ft_strlen(arr[i].str));
+		write (1, " ", 1);
 		i++;
 	}
+	write (1, "\n", 1);
 }
 
 // convert sum to int
