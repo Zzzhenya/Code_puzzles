@@ -7,3 +7,8 @@ all: $(NAME)
 
 $(NAME): $(SRC)
 	clang -Wall -Wextra -Werror -lm $(SRC) -o $(NAME)
+
+run: $(NAME) sample.txt
+	./$(NAME) < sample.txt
+
+.PHONY: all run

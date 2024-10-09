@@ -11,7 +11,15 @@ The task is to put the items into the bag such that
 the sum of profits associated with them is the maximum possible. 
 */
 
+#include <stdio.h>
+
 int main(void)
 {
-	
+	char *line = NULL;
+	size_t linecap = 0;
+	ssize_t linelen;
+
+	while((linelen = getline(&line, &linecap, stdin)) > 0)
+		fwrite(line, linelen, 1, stdout);
+	return (0);
 }
