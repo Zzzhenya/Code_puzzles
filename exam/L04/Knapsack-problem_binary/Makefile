@@ -6,7 +6,7 @@ all: $(NAME)
 
 
 $(NAME): $(SRC)
-	clang -Wall -Wextra -Werror -lm $(SRC) -o $(NAME)
+	clang -Wall -Wextra -Werror -g -lm $(SRC) -o $(NAME)
 
 run: $(NAME) sample.txt
 	./$(NAME) < sample.txt
