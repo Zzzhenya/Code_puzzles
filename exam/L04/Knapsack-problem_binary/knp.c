@@ -94,14 +94,14 @@ t_item *check_each(t_item *arr, int size, int sum, int loc)
 
 	if (!arr)
 	{
-		printf("max: %d\n", max);
+		//printf("max: %d\n", max);
 		return (max_arr);
 	}
 	else
 	{
 		if (calc_weight(arr, size) == sum)
 		{
-			print_path(arr, size);
+			//print_path(arr, size);
 			if (calc_price(arr, size) > max)
 			{
 				max = calc_price(arr, size);
@@ -152,5 +152,6 @@ int main(void)
 	check_each(cpy, len, sum, 0);
 	t_item *max = check_each(NULL, len, sum, 0);
 	print_path(max, len);
+	free(max);
 	return (0);
 }
