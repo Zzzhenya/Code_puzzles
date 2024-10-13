@@ -1,6 +1,8 @@
 /*
 
-Print all permutations of a givern string
+Print all permutations of a given string(without repeated characters)
+int ASCII order.
+If there are repeat characters, duplicate permutations are printed.
 
 https://www.geeksforgeeks.org/write-a-c-program-to-print-all-permutations-of-a-given-string/
 
@@ -31,6 +33,7 @@ int sorted(char *str, int size)
 	return (1);
 }
 
+// Sort to make sure the startig string is in ASCII order
 void sort_in_place(char *str, int size)
 {
 	if (sorted(str, size))
@@ -66,6 +69,7 @@ void	permute(char *str, int size, int loc)
 		str[i] = str[loc];
 		str[loc] = c;
 		permute(str, size, loc + 1);
+		// backtracking
 		c = str[i];
 		str[i] = str[loc];
 		str[loc] = c;
@@ -80,6 +84,7 @@ int main(int argc, char **argv)
 		return (1);
 	char *str = argv[1];
 	int size = ft_strlen(str);
+	// if string is empty does not print anything
 	if (size)
 	{
 		sort_in_place(str, size);
