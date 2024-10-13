@@ -52,6 +52,28 @@ void sort_in_place(char *str, int size)
 	}
 }
 
+void	permute(char *str, int size, int loc)
+{
+	if (loc == size - 1)
+	{
+		puts(str);
+		return;
+	}
+	int i = loc;
+	while (i < size)
+	{
+		char c = str[i];
+		str[i] = str[loc];
+		str[loc] = c;
+		permute(str, size, loc + 1);
+		c = str[i];
+		str[i] = str[loc];
+		str[loc] = c;
+		i++;
+	}
+
+}
+
 int main(int argc, char **argv)
 {
 	if (argc != 2)
@@ -61,7 +83,8 @@ int main(int argc, char **argv)
 	if (size)
 	{
 		sort_in_place(str, size);
-		puts(str);
+		//puts(str);
+		permute(str, size, 0);
 	}
 	return (0);
 }
