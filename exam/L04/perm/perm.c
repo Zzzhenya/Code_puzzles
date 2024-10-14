@@ -57,22 +57,26 @@ void sort_in_place(char *str, int size)
 
 void	permute(char *str, int size, int loc)
 {
+	static int term = 0;
 	if (loc == size - 1)
 	{
 		puts(str);
 		return;
 	}
 	int i = loc;
+	term ++;
 	while (i < size)
 	{
 		char c = str[i];
 		str[i] = str[loc];
 		str[loc] = c;
+		printf("%d permute loc:%d i:%d str[loc]:%c str[i]:%c\t %s\n", term, loc + 1, i, str[loc], str[i], str);
 		permute(str, size, loc + 1);
 		// backtracking
 		c = str[i];
 		str[i] = str[loc];
 		str[loc] = c;
+		printf("%d loop loc:%d i:%d str[loc]:%c str[i]:%c\t %s\n", term, loc + 1, i, str[loc], str[i], str);
 		i++;
 	}
 
