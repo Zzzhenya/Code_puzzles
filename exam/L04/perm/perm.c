@@ -1,7 +1,7 @@
 /*
 
-Print all permutations of a given string(without repeated characters)
-int ASCII order.
+Print all permutations of a given string(without repeated characters) - lexicographically pre-ordered and 
+printed in any order
 If there are repeat characters, duplicate permutations are printed.
 
 https://www.geeksforgeeks.org/write-a-c-program-to-print-all-permutations-of-a-given-string/
@@ -67,16 +67,18 @@ void	permute(char *str, int size, int loc)
 	term ++;
 	while (i < size)
 	{
+		//printf("%d first swap\tloc:%d i:%d str[loc]:%c str[i]:%c\t %s\n", term, loc, i, str[loc], str[i], str);
 		char c = str[i];
 		str[i] = str[loc];
 		str[loc] = c;
-		printf("%d permute loc:%d i:%d str[loc]:%c str[i]:%c\t %s\n", term, loc + 1, i, str[loc], str[i], str);
+		//printf("%d permute\tloc:%d i:%d str[loc]:%c str[i]:%c\t %s\n", term, loc + 1, i, str[loc + 1], str[i], str);
 		permute(str, size, loc + 1);
+		//printf("%d second swap\tloc:%d i:%d str[loc]:%c str[i]:%c\t %s\n", term, loc, i, str[loc], str[i], str);
 		// backtracking
 		c = str[i];
 		str[i] = str[loc];
 		str[loc] = c;
-		printf("%d loop loc:%d i:%d str[loc]:%c str[i]:%c\t %s\n", term, loc + 1, i, str[loc], str[i], str);
+		//printf("%d loop\t\tloc:%d i:%d str[loc]:%c str[i]:%c\t %s\n", term, loc, i, str[loc], str[i], str);
 		i++;
 	}
 
