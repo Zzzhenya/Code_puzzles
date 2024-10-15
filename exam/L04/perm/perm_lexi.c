@@ -86,6 +86,18 @@ int find_ceil(char *str, int size, int start)
 	return (min_index);
 }
 
+int get_rightmost_smaller_than_next(char *str, int size)
+{
+	int i = size - 2;
+	while (i >= 0)
+	{
+		if (str[i] < str[i + 1])
+			return (i);
+		i--;
+	}
+	return (i);
+}
+
 void	permute(char *str, int size)//, int loc)
 {
 	while (!is_reverse_sorted(str, size))
@@ -93,11 +105,8 @@ void	permute(char *str, int size)//, int loc)
 		// print current permutation - if sorted its the first
 		puts(str);
 		// Find the rightmost character which is smaller than its next 
-		// character. Let us call it 'first char' 
-		int i; 
-		for ( i = size - 2; i >= 0; --i ) 
-		if (str[i] < str[i+1]) 
-			break; 
+		// character. Let us call it 'first char'
+		int i = get_rightmost_smaller_than_next(str, size);
 		//printf("%c\n", str[i]);
 		// If there is no such character, all are sorted in decreasing order, 
 		// means we just printed the last permutation and we are done. 
