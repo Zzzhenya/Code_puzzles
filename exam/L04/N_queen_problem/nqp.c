@@ -37,8 +37,7 @@ long ft_atoi(char *str)
 	return (n * sign);
 }
 
-#include <stdio.h>
-
+#include <stdio.h> 
 int **make_grid(int n)
 {
 	int i = 0;
@@ -124,7 +123,7 @@ int	usable(int **arr, int n, int i, int j)
 	int col = 0;
 	while (col < n)
 	{
-		if (arr[row][col] == 4 || arr[i][j] == 1)
+		if (arr[row][col] == 4 )//|| arr[i][j] == 1)
 			return (0);
 		col++;
 	}
@@ -132,42 +131,42 @@ int	usable(int **arr, int n, int i, int j)
 	col = j;
 	while (row < n)
 	{
-		if (arr[row][col] == 4 || arr[i][j] == 1)
+		if (arr[row][col] == 4 )//|| arr[i][j] == 1)
 			return (0);
 		row ++;
 	}
 	row = i; col = j;
 	while (row > 0 && col > 0)
 	{
-		if (arr[row][col] == 4)
+		if (arr[row][col] == 4 )//|| arr[row][col] == 1)
 			return (0);
 		row--;
 		col--;
 	}
-	// row = i; col = j;
-	// while (row < n && col < n)
-	// {
-	// 	if (arr[row][col] == 4|| arr[i][j] == 1)
-	// 		return (0);
-	// 	row++;
-	// 	col++;
-	// }
-	// row = i; col = j;
-	// while (row > 0 && col < n)
-	// {
-	// 	if (arr[row][col] == 4|| arr[i][j] == 1)
-	// 		return (0);
-	// 	row--;
-	// 	col++;
-	// }
-	// row = i; col = j;
-	// while (row < n && col > 0)
-	// {
-	// 	if (arr[row][col] == 4|| arr[i][j] == 1)
-	// 		return (0);
-	// 	row++;
-	// 	col--;
-	// }
+	row = i; col = j;
+	while (row < n && col < n)
+	{
+		if (arr[row][col] == 4 )//|| arr[row][col] == 1)
+			return (0);
+		row++;
+		col++;
+	}
+	row = i; col = j;
+	while (row > 0 && col < n)
+	{
+		if (arr[row][col] == 4 )//|| arr[row][col] == 1)
+			return (0);
+		row--;
+		col++;
+	}
+	row = i; col = j;
+	while (row < n && col > 0)
+	{
+		if (arr[row][col] == 4 )//|| arr[row][col] == 1)
+			return (0);
+		row++;
+		col--;
+	}
 	return (1);
 }
 
@@ -189,34 +188,123 @@ void mark_unusable(int **arr, int n, int i , int j)
 			arr[row][col] = 1;
 		row ++;
 	}
+	row = i; col = j;
+	while (row > 0 && col > 0)
+	{
+		if (arr[row][col] != 4)
+			arr[row][col] = 1;
+		row--;
+		col--;
+	}
+	row = i; col = j;
+	while (row < n && col < n)
+	{
+		//if (row != i && col != j)
+		if (arr[row][col] != 4)
+			arr[row][col] = 1;
+		row++;
+		col++;
+	}
+	row = i; col = j;
+	while (row > 0 && col < n)
+	{
+		if (arr[row][col] != 4)
+			arr[row][col] = 1;
+		row--;
+		col++;
+	}
+	row = i; col = j;
+	while (row < n && col > 0)
+	{
+		if (arr[row][col] != 4 )
+			arr[row][col] = 1;
+		row++;
+		col--;
+	}
+}
+
+void mark_usable(int **arr, int n, int i , int j)
+{
+	int row = i;
+	int col = 0;
+	while (col < n)
+	{
+		if (arr[row][col] == 1)
+			arr[row][col] = 0;
+		col++;
+	}
+	row = 0;
+	col = j;
+	while (row < n)
+	{
+		if (arr[row][col] == 1)
+			arr[row][col] = 0;
+		row ++;
+	}
+	row = i; col = j;
+	while (row > 0 && col > 0)
+	{
+		if (arr[row][col] == 1)
+			arr[row][col] = 0;
+		row--;
+		col--;
+	}
+	row = i; col = j;
+	while (row < n && col < n)
+	{
+		if (arr[row][col] == 1)
+			arr[row][col] = 0;
+		row++;
+		col++;
+	}
+	row = i; col = j;
+	while (row > 0 && col < n)
+	{
+		if (arr[row][col] == 1)
+			arr[row][col] = 0;
+		row--;
+		col++;
+	}
+	row = i; col = j;
+	while (row < n && col > 0)
+	{
+		if (arr[row][col] == 1 )
+			arr[row][col] = 0;
+		row++;
+		col--;
+	}
 }
 
 void	find_combination(int **arr, int n, int loc)
 {
-	// if (has_n_queens(arr, n) )//|| loc == (n * n) - 1)
-	// 	print_grid(arr, n);
-	// else
-	{
-		// int i = loc/n;
-		// int j = loc%n;
-		
-		//while (loc < (n * n))
-		while (loc < 25)
+	// if (loc == (n * n) - 1 )//&& has_n_queens(arr, n))
+	// {
+		if (loc == (n * n) - 1 && has_n_queens(arr, n))
 		{
-			print_grid(arr, n);
-			int i = loc/n;
-			int j = loc%n;
+			if (has_n_queens(arr, n))
+				print_grid(arr, n);
+			return;
+		}
+	// }
+		int k = loc;
+		while (k < (n * n))
+		{
+			//printf("loc: %d\n", loc);
+			//print_grid(arr, n);
+			int i = k/n;
+			int j = k%n;
 			if (usable(arr,n, i, j))
 			{
+				int a = arr[i][j];
 				arr[i][j] = 4;
 				mark_unusable(arr, n, i ,j);
-				//print_grid(arr, n);
+				find_combination(arr, n, k + 1);
+				arr[i][j] = a;
+				mark_usable(arr, n, i , j);
 			}
-			//find_combination(arr, n, loc + 1);
-			loc++;
+			k++;
 		}
-		print_grid(arr, n);
-	}
+
 }
 
 int main(int argc, char **argv)
@@ -228,7 +316,7 @@ int main(int argc, char **argv)
 	long n = ft_atoi(argv[1]);
 	//printf("n: %ld\n", n);
 	int **arr = make_grid(n);
-	find_combination(arr, n, 18);	
+	find_combination(arr, n, 0);	
 	//print_grid(arr, n);
 	//free_grid(arr, n);
 }
