@@ -275,16 +275,99 @@ void mark_usable(int **arr, int n, int i , int j)
 	}
 }
 
+int	ok(int **arr, int n, int i, int j)
+{
+	//int check = 0;
+
+	//check current loc
+
+	// if (arr[i][j] == 4)
+	// 	return (0);
+	// if (arr[i][j] == 1)
+	// 	return (0);
+	// +
+	// line
+	int row = i;
+	int col = 0;
+	while (col < n)
+	{
+		if (arr[row][col] == 4  && row != i && col != j)//|| arr[i][j] == 1)
+			return (0);
+		col++;
+	}
+	row = 0;
+	col = j;
+	while (row < n)
+	{
+		if (arr[row][col] == 4 && row != i && col != j)//|| arr[i][j] == 1)
+			return (0);
+		row ++;
+	}
+	row = i; col = j;
+	while (row > 0 && col > 0)
+	{
+		if (arr[row][col] == 4 && row != i && col != j)//|| arr[row][col] == 1)
+			return (0);
+		row--;
+		col--;
+	}
+	row = i; col = j;
+	while (row < n && col < n)
+	{
+		if (arr[row][col] == 4 && row != i && col != j)//|| arr[row][col] == 1)
+			return (0);
+		row++;
+		col++;
+	}
+	row = i; col = j;
+	while (row > 0 && col < n)
+	{
+		if (arr[row][col] == 4 && row != i && col != j)//|| arr[row][col] == 1)
+			return (0);
+		row--;
+		col++;
+	}
+	row = i; col = j;
+	while (row < n && col > 0)
+	{
+		if (arr[row][col] == 4 && row != i && col != j)//|| arr[row][col] == 1)
+			return (0);
+		row++;
+		col--;
+	}
+	return (1);
+}
+
+int valid (int **arr, int n)
+{
+	int i = 0;
+	int j = 0;
+
+	while (i < n)
+	{
+		j = 0;
+		while (j < n)
+		{
+			if (arr[i][j] == 4)
+			{
+				if (!ok(arr, n, i, j))
+					return (0);
+			}
+			j++;
+		}
+		i ++;
+	}
+	return (1);
+}
+
 void	find_combination(int **arr, int n, int loc)
 {
-	// if (loc == (n * n) - 1 )//&& has_n_queens(arr, n))
-	// {
-		if (loc == (n * n) - 1 && has_n_queens(arr, n))
-		{
-			if (has_n_queens(arr, n))
-				print_grid(arr, n);
-			return;
-		}
+	if (loc == (n * n) - 1 && has_n_queens(arr, n))
+	{
+		if (has_n_queens(arr, n) && valid(arr, n))
+			print_grid(arr, n);
+		return;
+	}
 	// }
 		int k = loc;
 		while (k < (n * n))
