@@ -28,6 +28,7 @@ int count_cmds(char **cmds[])
 
 int exec_cmd(char *cmd[], int cmd_count, int fds[cmd_count][2], int loc)
 {
+	(void)fds;
 	static int prev_fd = -1;
 	int fd[2];
 	if (pipe(fd) == -1)
@@ -39,25 +40,30 @@ int exec_cmd(char *cmd[], int cmd_count, int fds[cmd_count][2], int loc)
 		{
 			dup2(fd[1], STDOUT);
 			close(fd[1]);
+			close(fd[0]);
+		}
+		if (loc == cmd_count - 1)
+		{
+			dup2(prev_fd, STDIN);
+			close(prev_fd);
+			close(fd[0]);
 		}
 		else
 		{
 			dup2(prev_fd, STDIN);
 			close(prev_fd);
+			dup2(fd[1], STDOUT);
+			close(fd[1]);
+			close(fd[0]);
 		}
-		dup2(fd[1], STDOUT);
-		close(fd[1]);
 		execvp(cmd[0], cmd);
 		return (1);
 	}
 	else
 	{
-		if (prev_fd == -1)
-			prev_fd = fd[0];
-		else
-		{
+		prev_fd = fd[0];
+		if (prev_fd != -1)
 			close(fd[0]);
-		}
 		close(fd[1]);
 		return (0);
 	}
@@ -93,10 +99,10 @@ int picoshell(char **cmds[])
 
 int main(void)
 {
-	char *first[2] = {"/bin/ls", NULL};
-	char *second[3] = {"asjkfasf", "-la",  NULL};
-	//char *second[3] = {"grep", "picoshell", NULL};
-	//char *second[2] = {"ls", NULL};
+	char *first[2] = {"ls",  NULL};
+	//char *second[3] = {"asjkfasf", "-la",  NULL};
+	char *second[3] = {"grep", "Makefile" , NULL};
+	//char *first[2] = {"ls", NULL};
 
 	char **cmds[3] = {first, second, NULL};
 	//char **cmds[2] = {first, NULL};
