@@ -26,18 +26,25 @@ int count_cmds(char **cmds[])
 	return (i);
 }
 
-int exec_cmd(char *cmd[], int last, int first)
+int exec_cmd(char *cmd[], int cmd_count, int fds[cmd_count][2], int loc)
 {
-	//int status;
-	(void)first; (void)last;
-	//static int state = -1;
+	static int prev_fd = -1;
 	int fd[2];
 	if (pipe(fd) == -1)
 		return (1);
 	int pid = fork();
 	if (pid == 0)
 	{
-		close(fd[0]);
+		if (prev_fd == -1)
+		{
+			dup2(fd[1], STDOUT);
+			close(fd[1]);
+		}
+		else
+		{
+			dup2(prev_fd, STDIN);
+			close(prev_fd);
+		}
 		dup2(fd[1], STDOUT);
 		close(fd[1]);
 		execvp(cmd[0], cmd);
@@ -45,9 +52,13 @@ int exec_cmd(char *cmd[], int last, int first)
 	}
 	else
 	{
+		if (prev_fd == -1)
+			prev_fd = fd[0];
+		else
+		{
+			close(fd[0]);
+		}
 		close(fd[1]);
-		dup2(fd[0], STDIN);
-		close(fd[0]);
 		return (0);
 	}
 }
@@ -58,20 +69,20 @@ int picoshell(char **cmds[])
 	int status;
 	int cmd_count = count_cmds(cmds);
 	int i = 0;
+	int fds[cmd_count][2];
 	while (i < cmd_count)
 	{
-		if (i == 0 && i + 1 != cmd_count)
-			status = exec_cmd(cmds[i], 0, 1);
-		else if (i == 0 && i + 1 == cmd_count)
-			status = exec_cmd(cmds[i], 1, 1);
-		else if (i + 1 == cmd_count)
-			status = exec_cmd(cmds[i], 1, 0);
-		else
-			status = exec_cmd(cmds[i], 0, 0);
+		//first, last middle
+		if (i == 0 )
+			status = exec_cmd(cmds[i],cmd_count, fds, i);
+		else if (i == cmd_count - 1)
+			status = exec_cmd(cmds[i],cmd_count, fds, i);
+		else if (i > 0)
+			status = exec_cmd(cmds[i],cmd_count, fds, i);
 		i++;
 	}
-	// wait(&status);
-	wait(NULL);
+	wait(&status);
+	// wait(NULL);
 	if (WIFEXITED(status))
 		WEXITSTATUS(status);
 	if (status)
@@ -82,14 +93,14 @@ int picoshell(char **cmds[])
 
 int main(void)
 {
-	//char *first[2] = {"/bin/ls", NULL};
-	char *first[3] = {"asjkfasf", "-la",  NULL};
+	char *first[2] = {"/bin/ls", NULL};
+	char *second[3] = {"asjkfasf", "-la",  NULL};
 	//char *second[3] = {"grep", "picoshell", NULL};
-	char *second[2] = {"ls", NULL};
+	//char *second[2] = {"ls", NULL};
 
-	//char **cmds[3] = {first, second, NULL};
 	char **cmds[3] = {first, second, NULL};
-	printf("status: %d\n", picoshell(cmds));
+	//char **cmds[2] = {first, NULL};
+	printf("picoshell status: %d\n", picoshell(cmds));
 
 	return (0);
 }
