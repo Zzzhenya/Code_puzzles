@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 
 #define STDIN 0
@@ -25,38 +26,28 @@ int count_cmds(char **cmds[])
 	return (i);
 }
 
-int exec_cmd(char *cmd[], int last)
+int exec_cmd(char *cmd[], int last, int first)
 {
 	//int status;
-	static int state = -1;
+	(void)first; (void)last;
+	//static int state = -1;
 	int fd[2];
 	if (pipe(fd) == -1)
 		return (1);
 	int pid = fork();
 	if (pid == 0)
 	{
-		if (state != -1)
-		{
-			dup2(state, STDIN);
-			close(state);
-		}
-		if (last)
-			dup2(fd[1], STDOUT);
 		close(fd[0]);
+		dup2(fd[1], STDOUT);
 		close(fd[1]);
 		execvp(cmd[0], cmd);
 		return (1);
 	}
 	else
 	{
-		if (state != -1)
-			close(state);
-		if (last)
-			state = -1;
-		else
-			state = fd[0];
-		close(fd[0]);
 		close(fd[1]);
+		dup2(fd[0], STDIN);
+		close(fd[0]);
 		return (0);
 	}
 }
@@ -69,13 +60,18 @@ int picoshell(char **cmds[])
 	int i = 0;
 	while (i < cmd_count)
 	{
-		if (i == cmd_count - 1)
-			status = exec_cmd(cmds[i], 1);
+		if (i == 0 && i + 1 != cmd_count)
+			status = exec_cmd(cmds[i], 0, 1);
+		else if (i == 0 && i + 1 == cmd_count)
+			status = exec_cmd(cmds[i], 1, 1);
+		else if (i + 1 == cmd_count)
+			status = exec_cmd(cmds[i], 1, 0);
 		else
-			status = exec_cmd(cmds[i], 0);
+			status = exec_cmd(cmds[i], 0, 0);
 		i++;
 	}
-	wait(&status);
+	// wait(&status);
+	wait(NULL);
 	if (WIFEXITED(status))
 		WEXITSTATUS(status);
 	if (status)
@@ -94,5 +90,6 @@ int main(void)
 	//char **cmds[3] = {first, second, NULL};
 	char **cmds[3] = {first, second, NULL};
 	printf("status: %d\n", picoshell(cmds));
+
 	return (0);
 }
