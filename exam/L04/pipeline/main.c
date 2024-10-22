@@ -6,6 +6,8 @@
 #define STDIN 0
 #define STDOUT 1
 
+int g_status = 0;
+
 typedef struct s_cmd
 {
 	int in;
@@ -32,29 +34,28 @@ int count_cmds(char **cmds[])
 	return (i);
 }
 
-int exec_cmd(char *cmd[], int pipe_count, t_cmd arr[pipe_count], int i)
+int exec_cmd(char *cmd[], int cmd_count, t_cmd arr[cmd_count], int i)
 {
+	//int status = 0;
 	int pid = fork();
 	if (pid == -1)
 		return (1);
 	if (pid == 0)
 	{
 		if (arr[i].out != STDOUT)
-		{
-			if (dup2(arr[i].out, STDOUT) == -1)
-				return (1);
-			if (close(arr[i].out) == -1)
-				return (1);
-		}
+			dup2(arr[i].out, STDOUT);
 		if (arr[i].in != STDIN)
-		{
-			if (dup2(arr[i].in, STDIN) == -1)
-				return (1);
-			if (close(arr[i].in) == 1)
-				return (1);
-		}
+			dup2(arr[i].in, STDIN);
 		if (execvp(cmd[0], cmd) == -1)
-			return (1);
+		{
+			if (arr[i].in != STDIN)
+				close(arr[i].in);
+			if (arr[i].out != STDOUT)
+				close(arr[i].out);
+			g_status = 1;
+
+		}
+		return (g_status);
 	}
 	else
 	{
@@ -62,37 +63,33 @@ int exec_cmd(char *cmd[], int pipe_count, t_cmd arr[pipe_count], int i)
 			close(arr[i].out);
 		if (arr[i].in != STDIN)
 			close(arr[i].in);
+		return (g_status);
+		// wait(&status);
+		// return ((WIFEXITED(status)) &&	WEXITSTATUS(status));
 	}
-	return (0);
 }
 
-int setup_pipes(int cmd_count, t_cmd arr[cmd_count])
+int setup_pipes(int cmd_count, t_cmd arr[cmd_count], char **cmds[], int fd[2])
 {
 	for (int i = 0; i < cmd_count; i++)
 	{
 		arr[i].in = STDIN;
 		arr[i].out = STDOUT;
 	}
-	int pipe_count = cmd_count - 1;
-	if (pipe_count)
+	for (int i = 0; i < cmd_count; i++)
 	{
-		for (int i = 0; i < pipe_count; i++)
+		if (cmds[i + 1])
 		{
-			int fd[2];
 			if (pipe(fd) == -1)
 				return (0);
-			if (i == 0 || i + 1 == pipe_count)
-			{
-				if (i == 0)
-					arr[i].out = fd[1];
-				if (i + 1 == pipe_count)
-					arr[i+1].in = fd[0];
-			}
-			else
-			{
-				arr[i].in = fd[0];
+			if (arr[i].out == STDOUT)
 				arr[i].out = fd[1];
-			}
+			if (arr[i + 1].in == STDIN)
+				arr[i+1].in = fd[0];
+			if (arr[i].out != fd[1])
+				close(fd[1]);
+			if (arr[i + 1].in != fd[0])
+				close(fd[0]);
 		}
 	}
 	return (1);
@@ -101,37 +98,49 @@ int setup_pipes(int cmd_count, t_cmd arr[cmd_count])
 int picoshell(char **cmds[])
 {
 	//print_cmds(cmds);
-	int status = 0;
-	int cmd_count = count_cmds(cmds);
-	t_cmd arr[cmd_count];
-	if (!setup_pipes(cmd_count, arr))
-		return (1);
-	int pipe_count = cmd_count - 1;
-	int ret = 0;
-	int check = 0;
-	for (int i = 0; i < cmd_count; i++)
+	//int status = 0;
+	int pid = fork();
+	if (!pid)
 	{
-		ret = exec_cmd(cmds[i], pipe_count, arr, i);
-		if (ret && check == 0)
-			check = 1;
+		int cmd_count = count_cmds(cmds);
+		//printf("cmds: %d\n", cmd_count);
+		t_cmd arr[cmd_count]; 
+		int fd[2];
+		setup_pipes(cmd_count, arr, cmds, fd);
+		int ret = 0;
+		int check = 0;
+		for (int i = 0; i < cmd_count; i++)
+		{
+			ret = exec_cmd(cmds[i], cmd_count, arr, i);
+			if (ret && !check)
+				check = ret;
+		}
+		// wait(&g_status);
+		// if (WIFEXITED(g_status))
+		// 	WEXITSTATUS(g_status);
+		if (g_status || ret || check)
+			exit (1);
+		else
+			exit (0);
 	}
-	wait(&status);
-	if (status || check)
-		return (1);
 	else
-		return (0);
+	{
+		int new_stat = 0; 
+		wait(&new_stat);
+		return (WIFEXITED(new_stat) && WEXITSTATUS(new_stat));
+	}
 }
 
 int main(void)
 {
-	char *first[2] = {"ls",  NULL};
-	//char *first[3] = {"asjkfasf", "-la",  NULL};
+	char *first[2] = {"ahjasgfjhasf",  NULL};
+	//char *first[2] = {"ls",  NULL};
 	char *second[3] = {"grep", "Makefile" , NULL};
-	//char *second[2] = {"ls", NULL};
+	//char *second[2] = {"asjhf", NULL};
 
+	//char **cmds[4] = {first, second, third, NULL};
 	char **cmds[3] = {first, second, NULL};
-	//char **cmds[2] = {first, NULL};
-	printf("picoshell status: %d\n", picoshell(cmds));
-
+	int ret =  picoshell(cmds);
+	fprintf(stderr, "picoshell :%d\n", ret);
 	return (0);
 }
