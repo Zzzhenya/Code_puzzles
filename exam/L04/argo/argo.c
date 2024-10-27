@@ -64,74 +64,108 @@ char	*add_letter(char *str, char c)
 
 }
 
+char *make_string(FILE *stream, char c)
+{
+	char *str = NULL;
+	int a = getc(stream);
+	while (a != EOF)
+	{
+		a = getc(stream);
+		if (( a == '\\' && peek(stream) == c) || (a != c))
+		{
+			if ( a == '\\' && peek(stream) == c)
+				a = getc(stream);
+		}
+		else if (a == c)
+		{
+			ungetc(a, stream);
+			break;
+		}
+		// printf("%c ", a);
+		str = add_letter(str, a);
+	}
+	if (!expect(stream, c))
+		 return (NULL);
+	return (str);
+}
+
+int make_integer(FILE *stream, int c)
+{
+	int n = 0;
+	int a = c;
+	while (a != EOF)
+	{
+		a = getc(stream);
+		if (isdigit(a))
+			n = (n * 10) + (a - 48);
+		else
+		{
+			ungetc(a, stream);
+			break;
+		}
+	}
+	return (n);
+}
+
 int argo(json *dst, FILE *stream)
 {
-	(void)dst;
+	//(void)dst;
 	int a = 1;
 	if (!stream)
 		return (-1);
 	int c = peek(stream);
 	if (c == '"')
 	{
-		printf("str: ");
-		a = getc(stream);
-		while (a != EOF)
-		{
-			a = getc(stream);
-			if (( a == '\\' && peek(stream) == c) || (a != c))
-			{
-				if ( a == '\\' && peek(stream) == c)
-					a = getc(stream);
-			}
-			else if (a == c)
-			{
-				ungetc(a, stream);
-				break;
-			}
-			printf("%c", a);
-		}
-		printf("\n");
-		//a = getc(stream);
-		if (!expect(stream, c))
-		 	return (-1);
-		//argo(NULL, stream);
+		dst->type = STRING;
+		dst->string = make_string(stream, c);
+		//printf("str: ");
+		if (!dst->string)
+			return (-1);
+		// printf("%s\n", dst->string);
 		return (1);
 	}
 	else if (isdigit(c))
 	{
-		int n = 0;
-		a = c;
-		printf("num: ");
-		while (a != EOF)
-		{
-			a = getc(stream);
-			if (isdigit(a))
-				n = (n * 10) + (a - 48);
-			else
-			{
-				ungetc(a, stream);
-				break;
-			}
-		}
-		printf("%d\n", n);
-		//argo(NULL, stream);
+		dst->type = INTEGER;
+		dst->integer = make_integer(stream, c); // negative numbers not handled yet
+		// printf("num: ");
+		// printf("%d\n", dst->integer);
 		return (1);
 	}
 	else if (c == '{')
 	{
+		//dst = malloc(sizeof(json) * 1);
+		dst->type = MAP;
+		dst->map.size = 1;
+		dst->map.data = malloc(sizeof(pair) * 1);
+		int i = 0;
 		char sep = ',';
 		char next = ':';
 		a = getc(stream);
 		while (peek(stream) != EOF)
 		{
-			argo(NULL, stream);
+			dst->map.data = realloc( dst->map.data , sizeof(pair) * dst->map.size);
+			c = peek(stream);
+			// if (!expect(stream, '"'))
+		 	// 	return (-1);
+			dst->map.data[dst->map.size - 1].key = make_string(stream, c);
+			// printf("key: ");
+			if (!dst->map.data[dst->map.size - 1].key)
+				return (-1);
+			// printf("%s\n", dst->map.data[dst->map.size - 1].key);
+			// argo(NULL, stream);
+			//seperator
 			if (!expect(stream, next))
 		 		return (-1);
-			argo(NULL, stream);
+		 	argo(&dst->map.data[dst->map.size - 1].value, stream);
+			//argo(NULL, stream);
 			if (peek(stream) != sep)
 				break;
 			else
+			{
+				dst->map.size++;
 				getc(stream);
+			}
 		}
 		next = '}';
 		if (!expect(stream, next))
