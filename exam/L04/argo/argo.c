@@ -52,13 +52,6 @@ int ft_strlen(char *str)
 
 char	*add_letter(char *str, char c)
 {
-	// if (!str)
-	// {
-	// 	str = malloc(sizeof(char) * 2);
-	// 	str[0] = c;
-	// 	str[1] = '\0';
-	// 	return (str);
-	// }
 	int len = ft_strlen(str);
 	char *cpy = malloc(sizeof(char) * len + 2);
 	for (int i = 0; i < len; i++)
@@ -73,93 +66,78 @@ char	*add_letter(char *str, char c)
 
 int argo(json *dst, FILE *stream)
 {
-	char c = peek(stream);
-	if (c  == '"')
+	(void)dst;
+	int a = 1;
+	if (!stream)
+		return (-1);
+	int c = peek(stream);
+	if (c == '"')
 	{
-		dst->type = STRING;
-		char *str = NULL;
-		int i = 0;
-		int check = 0;
-		while (1)
+		printf("str: ");
+		a = getc(stream);
+		while (a != EOF)
 		{
-			c = getc(stream);
-			if (c == '"')
+			a = getc(stream);
+			if (( a == '\\' && peek(stream) == c) || (a != c))
 			{
-				if (str && str[i - 1] && str[i - 1] == '\\')
-				{
-					str[i - 1] = c;
-				}
-				else if (check == 1)
-					break;
-				else
-					check = 1;
+				if ( a == '\\' && peek(stream) == c)
+					a = getc(stream);
 			}
-			else
+			else if (a == c)
 			{
-				str = add_letter(str, c);
-				i++;
+				ungetc(a, stream);
+				break;
 			}
+			printf("%c", a);
 		}
-		dst->string = str;
+		printf("\n");
+		//a = getc(stream);
+		if (!expect(stream, c))
+		 	return (-1);
+		//argo(NULL, stream);
 		return (1);
 	}
 	else if (isdigit(c))
 	{
-		dst->type = INTEGER;
 		int n = 0;
-		int val = 0;
-		val = getc(stream);
-		while (isdigit(val))
+		a = c;
+		printf("num: ");
+		while (a != EOF)
 		{
-			n = n * 10 + (val - 48);
-			val = getc(stream);
-		}
-		dst->integer = n;
-		return(1);
-	}
-	else
-	{
-		dst->type = MAP;
-		dst->map.data = malloc(sizeof(pair) * 1);
-		dst->map.size = 1;
-		c = getc(stream);
-		// extract key
-		char *k = NULL;
-		int i = 0;
-		int check = 0;
-		while (1)
-		{
-			c = getc(stream);
-			if (c == '"')
-			{
-				if (k && k[i - 1] && k[i - 1] == '\\')
-				{
-					k[i - 1] = c;
-				}
-				else if (check == 1)
-					break;
-				else
-					check = 1;
-			}
+			a = getc(stream);
+			if (isdigit(a))
+				n = (n * 10) + (a - 48);
 			else
 			{
-				k = add_letter(k, c);
-				i++;
+				ungetc(a, stream);
+				break;
 			}
 		}
-		dst->map.data->key = k;
-		//if (peek(stream) == ',')
-			// add another map data
-			// increase the size by 1
-		if (peek(stream) == ':')
-		{
-			getc(stream);
-			return ( argo(&dst->map.data->value, stream));
-		}
+		printf("%d\n", n);
+		//argo(NULL, stream);
+		return (1);
 	}
-
-		// if (accept(stream, '{'))
-		// 	printf("A\n");
+	else if (c == '{')
+	{
+		char sep = ',';
+		char next = ':';
+		a = getc(stream);
+		while (peek(stream) != EOF)
+		{
+			argo(NULL, stream);
+			if (!expect(stream, next))
+		 		return (-1);
+			argo(NULL, stream);
+			if (peek(stream) != sep)
+				break;
+			else
+				getc(stream);
+		}
+		next = '}';
+		if (!expect(stream, next))
+		 	return (-1);
+		return (1);
+	}
 	return(1);
 }
 /*
