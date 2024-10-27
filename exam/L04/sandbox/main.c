@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <stdio.h>
 
 int sandbox(void(*f)(void), unsigned int timeout, bool verbose);
 
@@ -56,13 +57,15 @@ int sandbox(void(*f)(void), unsigned int timeout, bool verbose)
     {
         waitpid(pid, &status, 0);
         if WIFSIGNALED(status)
-            return (WTERMSIG(status));
-        else
+        {
+            int val = WTERMSIG(status);
+            printf("Exited with sig %s\n", strsignal(val));
             return (0);
+        }
+        else
+            return (1);
     }
 }
-
-#include <stdio.h>
 
 int main(void)
 {
