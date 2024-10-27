@@ -39,7 +39,7 @@ int sandbox(void(*f)(void), unsigned int timeout, bool verbose)
 {
     (void)verbose;
     int status = 0;
-    if (timeout > 100000000 || !f )
+    if (timeout > 100000000 || !f  || timeout == 0)
         return (-1);
     int pid = fork();
     if (pid < 0)
@@ -68,6 +68,7 @@ int main(void)
 {
     printf("sandbox: %d %d\n", 1,  sandbox(function1, 3, false));
     printf("sandbox: %d %d\n", 2,  sandbox(function2, 1000, false));
+    printf("sandbox: %d %d\n", 1,  sandbox(function1, 0, false));
     //function2();
     return (0);
 }
