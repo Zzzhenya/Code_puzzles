@@ -82,4 +82,5 @@ int main(int argc, char **argv)
 	}
 	serialize(file);
 	printf("\n");
+	free_json(file);
 }
