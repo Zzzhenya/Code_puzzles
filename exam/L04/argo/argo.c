@@ -109,7 +109,6 @@ int make_integer(FILE *stream, int c)
 
 int argo(json *dst, FILE *stream)
 {
-	//(void)dst;
 	int a = 1;
 	if (!stream)
 		return (-1);
@@ -175,37 +174,4 @@ int argo(json *dst, FILE *stream)
 		expect(stream, EOF);
 		return (-1);
 	}
-	//return(1);
 }
-/*
-	char *str = malloc(sizeof(char) * 10);
-	for (int i = 0; i < 10; i++)
-		str[i] = '\0';
-	int i = 0;
-	char c;
-	int check = 0;
-	while (1)
-	{
-		c = getc(stream);
-		// printf("%c\n", c);
-		if (c == '"')
-		{
-			if (str[i - 1] && str[i - 1] == '\\')
-			{
-				str[i - 1] = c;
-			}
-			else if (check == 1)
-				break;
-			else
-				check = 1;
-		}
-		else
-		{
-			str[i] = c;
-			i++;
-		}
-	}
-	printf("str: %s\n", str);
-	dst->type = STRING;
-	dst->string = str;
-*/
