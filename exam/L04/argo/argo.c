@@ -153,12 +153,10 @@ int argo(json *dst, FILE *stream)
 			if (!dst->map.data[dst->map.size - 1].key)
 				return (-1);
 			// printf("%s\n", dst->map.data[dst->map.size - 1].key);
-			// argo(NULL, stream);
 			//seperator
-			if (!expect(stream, next))
+			if (!expect(stream, ':'))
 		 		return (-1);
-		 	argo(&dst->map.data[dst->map.size - 1].value, stream);
-			//argo(NULL, stream);
+		 	return(argo(&dst->map.data[dst->map.size - 1].value, stream));
 			if (peek(stream) != sep)
 				break;
 			else
@@ -172,7 +170,12 @@ int argo(json *dst, FILE *stream)
 		 	return (-1);
 		return (1);
 	}
-	return(1);
+	else
+	{
+		expect(stream, EOF);
+		return (-1);
+	}
+	//return(1);
 }
 /*
 	char *str = malloc(sizeof(char) * 10);
