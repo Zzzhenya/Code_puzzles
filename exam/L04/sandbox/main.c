@@ -13,6 +13,7 @@ bad -
     if terminated or stop by signal (sigsev etc.)
     if exists with any code other than 0
     if it timesout
+    etc.
 
 if verbose == true
     write explicit message

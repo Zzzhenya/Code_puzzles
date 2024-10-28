@@ -153,7 +153,8 @@ void print_arr(int n, int cord[n])
 {
 	for (int i = 0; i < n; i++)
 	{
-		printf("row: %d\tcol: %d\t\t", i, cord[i]);
+		printf("%d ",cord[i]);
+		//printf("row: %d\tcol: %d\t\t", i, cord[i]);
 	}
 	printf("\n");
 }
@@ -187,9 +188,9 @@ int main (int argc, char **argv)
 	if (argc != 2)
 		return (0);
 	int n = ft_atoi(argv[1]);
-	write(1, argv[1], ft_strlen(argv[1]));
-	write(1, "\n", 1);
-	printf("n: %d\n", n);
+	// write(1, argv[1], ft_strlen(argv[1]));
+	// write(1, "\n", 1);
+	// printf("n: %d\n", n);
 	//int **arr = make_grid(n);
 	int cord[n];
 	// for (int i=0; i < n; i++)
