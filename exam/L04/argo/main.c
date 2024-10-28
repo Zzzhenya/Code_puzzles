@@ -78,9 +78,12 @@ int main(int argc, char **argv)
 	if (argo(&file, stream) != 1)
 	{
 		free_json(file);
+		fclose(stream);
 		return(1);
 	}
 	serialize(file);
 	printf("\n");
 	free_json(file);
+	fclose(stream);
+	return (0);
 }

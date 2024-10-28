@@ -158,7 +158,12 @@ int argo(json *dst, FILE *stream)
 			dst->map.data[dst->map.size - 1].key = make_string(stream, c);
 			// printf("key: ");
 			if (!dst->map.data[dst->map.size - 1].key)
+			{
+				dst->map.data[dst->map.size - 1].value.type = MAP;
+				dst->map.data[dst->map.size - 1].value.map.size = 0;
+				dst->map.data[dst->map.size - 1].value.map.data = NULL;
 				return (-1);
+			}
 			// printf("%s\n", dst->map.data[dst->map.size - 1].key);
 			//seperator
 			if (!expect(stream, ':'))
