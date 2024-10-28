@@ -190,6 +190,9 @@ int argo(json *dst, FILE *stream)
 	else
 	{
 		expect(stream, EOF);
+		dst->type = MAP;
+		dst->map.size = 0;
+		dst->map.data = NULL;
 		return (-1);
 	}
 }
