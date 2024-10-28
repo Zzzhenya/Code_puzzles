@@ -126,11 +126,24 @@ int argo(json *dst, FILE *stream)
 		// printf("%s\n", dst->string);
 		return (1);
 	}
-	else if (isdigit(c))
+	else if (isdigit(c) || (c == '+' || c == '-'))
 	{
+		int sign = 1;
+		if (c == '+' || c == '-')
+		{
+			a = getc(stream);
+			if (a == '-')
+				sign *= -1;
+		}
+		if (!isdigit(peek(stream)))
+		{
+			unexpected(stream);
+			return (-1);
+		}
 		dst->type = INTEGER;
 		dst->string = NULL;
-		dst->integer = make_integer(stream, c); // negative numbers not handled yet
+		dst->integer = make_integer(stream, c);
+		dst->integer *= sign;
 		// printf("num: ");
 		// printf("%d\n", dst->integer);
 		return (1);
