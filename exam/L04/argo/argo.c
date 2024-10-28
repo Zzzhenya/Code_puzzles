@@ -186,6 +186,9 @@ int argo(json *dst, FILE *stream)
 				dst->map.data[dst->map.size - 1].value.map.data = NULL;
 		 		return (-1);
 			}
+			dst->map.data[dst->map.size - 1].value.type = MAP;
+			dst->map.data[dst->map.size - 1].value.map.size = 0;
+			dst->map.data[dst->map.size - 1].value.map.data = NULL;
 			return(argo(&dst->map.data[dst->map.size - 1].value, stream));
 			if (peek(stream) != sep)
 				break;
@@ -197,7 +200,9 @@ int argo(json *dst, FILE *stream)
 		}
 		next = '}';
 		if (!expect(stream, next))
+		{
 		 	return (-1);
+		}
 		return (1);
 	}
 	else
