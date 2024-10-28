@@ -165,6 +165,9 @@ int argo(json *dst, FILE *stream)
 			if (dst->map.data)
 				free (dst->map.data);
 			dst->map.data = temp;
+			dst->map.data[dst->map.size - 1].value.type = MAP;
+			dst->map.data[dst->map.size - 1].value.map.size = 0;
+			dst->map.data[dst->map.size - 1].value.map.data = NULL;
 			c = peek(stream);
 			// if (!expect(stream, '"'))
 		 	// 	return (-1);
@@ -172,23 +175,14 @@ int argo(json *dst, FILE *stream)
 			// printf("key: ");
 			if (!dst->map.data[dst->map.size - 1].key)
 			{
-				dst->map.data[dst->map.size - 1].value.type = MAP;
-				dst->map.data[dst->map.size - 1].value.map.size = 0;
-				dst->map.data[dst->map.size - 1].value.map.data = NULL;
 				return (-1);
 			}
 			// printf("%s\n", dst->map.data[dst->map.size - 1].key);
 			//seperator
 			if (!expect(stream, ':'))
 			{
-				dst->map.data[dst->map.size - 1].value.type = MAP;
-				dst->map.data[dst->map.size - 1].value.map.size = 0;
-				dst->map.data[dst->map.size - 1].value.map.data = NULL;
 		 		return (-1);
 			}
-			dst->map.data[dst->map.size - 1].value.type = MAP;
-			dst->map.data[dst->map.size - 1].value.map.size = 0;
-			dst->map.data[dst->map.size - 1].value.map.data = NULL;
 			return(argo(&dst->map.data[dst->map.size - 1].value, stream));
 			if (peek(stream) != sep)
 				break;
