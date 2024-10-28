@@ -131,7 +131,7 @@ int argo(json *dst, FILE *stream)
 		int sign = 1;
 		if (c == '+' || c == '-')
 		{
-			a = getc(stream);
+			a = getc(stream);//  int i; fscanf(stream, "%d", i);
 			if (a == '-')
 				sign *= -1;
 		}
@@ -154,7 +154,7 @@ int argo(json *dst, FILE *stream)
 		dst->type = MAP;
 		dst->map.size = 1;
 		dst->map.data = NULL; //malloc(sizeof(pair) * 1);
-		int i = 0;
+		//int i = 0;
 		char sep = ',';
 		char next = ':';
 		a = getc(stream);
