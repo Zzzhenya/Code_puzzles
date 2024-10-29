@@ -51,57 +51,6 @@ int expect(char *s, char c)
     return 0;
 }
 
-/*
-2 + 4 x 5 + 1 = 23
-    node *tree = malloc(sizeof(node));
-    tree->type = ADD;
-    tree->r = new_node((node){
-        .type=ADD, 
-        .l=new_node((node){
-            .type=MULTI, 
-            .l=new_node((node){
-                .type=VAL, 
-                .val= 4}),
-            .r=new_node((node){
-                .type=VAL, 
-                .val= 5})}),
-        .r=new_node((node){
-            .type=VAL, 
-            .val=1})});
-    tree->l = new_node((node){.type=VAL, .val=2});
-    return (tree);
-*/
-   // int n = 0;
-    // static node *tree = NULL;
-    // if (*s == '\0')
-    //     return (tree);
-    // if (isdigit(*s))
-    // {
-        
-    //     while (isdigit(*s))
-    //     {
-    //         printf("%c", *s);
-    //         s++;
-    //     }
-    //     tree = new_node((node){.type=VAL, .val=4});
-    //     tree->r = NULL;
-    //     tree->l = NULL;
-    //     //if (*s == '\0')
-    //     return(pars_expr(s)); 
-    // }
-    // if (*s == '+')
-    // {
-    //     printf("%c", *s);
-    //     s++;
-    //     return(pars_expr(s));
-    // }
-    // if (*s == '*')
-    // {
-    //     printf("%c", *s);
-    //     s++;
-    //     return(pars_expr(s));
-    // }
-
 int find_plus(char *str)
 {
     int i = 0;
@@ -135,7 +84,7 @@ node *make_tree(node *tree, char *s)
     int loc = 0;
     if (find_plus(s) == -1 || !find_mult(s))
     {
-        tree = new_node((node){.type=VAL,.val=atoi(s), .l=NULL, .r=NULL});
+        tree = new_node((node){.type=VAL, .val=atoi(s), .l=NULL, .r=NULL});
     }
     if (find_plus(s) != -1)
     {
@@ -143,11 +92,7 @@ node *make_tree(node *tree, char *s)
         if (loc != -1)
         {
             s[loc]= '\0';
-            tree = new_node((node){
-                .type=ADD,
-                .l=NULL,
-                .r=NULL
-            });
+            tree = new_node((node){.type=ADD, .l=NULL, .r=NULL });
             tree->l = (make_tree(tree->l, s));
             tree->r = (make_tree(tree->r, s + loc + 1));
         }
@@ -158,11 +103,7 @@ node *make_tree(node *tree, char *s)
         if (loc != -1)
         {
             s[loc]= '\0';
-            tree = new_node((node){
-                .type=MULTI,
-                .l=NULL,
-                .r=NULL
-            });
+            tree = new_node((node){.type=MULTI, .l=NULL, .r=NULL});
             tree->l = (make_tree(tree->l, s));
             tree->r = (make_tree(tree->r, s + loc + 1));
         }
@@ -192,23 +133,62 @@ void    print_tree(node *tree)
             break;
 
     }
+}
 
+int is_number(char *s, int i)
+{
+    if (s[i] == '\0')
+    {
+        unexpected(s[i]);
+        return (-1);     
+    }
+    else if (s[i] != '\0')
+    {
+        if (s[i] == '+' || s[i] == '-')
+            i++;
+    }
+    if (!(s[i] != '\0' && isdigit(s[i])))
+    {
+        unexpected(s[i]);
+        return (-1);       
+    }
+    while (s[i] != '\0' && isdigit(s[i]))
+        i++;
+    return (i);
 }
 
 node *pars_expr(char *s)
 {
-    node *tree=NULL;
+    node *tree = NULL;
 
+    if (!s)
+        return (tree);
+    int i = 0;
+    int ret = 0;
+    if (s[i] != '\0')
+    {
+        ret = is_number(s, i);
+        if (ret == -1)
+            return (tree);
+        i = ret;
+    }
+    while (s[i] != '\0')
+    {
+        if (s[i] != '\0' && (s[i] == '+' || s[i] == '*'))
+            i++;
+        else
+        {
+            unexpected(s[i]);
+            return(tree);
+        }
+        ret = is_number(s, i);
+        if (ret == -1)
+            return (tree);
+        i = ret;
+    }
     tree = make_tree(tree, s);
     //print_tree(tree);
     return (tree);
-
-// change here
-    // if (*s)
-    // {
-    //     free(ret);
-    //     return NULL;
-    // }
 }
 
 int eval_tree(node *tree)
