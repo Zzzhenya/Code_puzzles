@@ -51,11 +51,27 @@ int expect(char *s, char c)
     return 0;
 }
 
-node *pars_expr(char *s)
-{
-    (void)s;
-    node *tree = malloc(sizeof(node))
-    // int n = 0;
+/*
+2 + 4 x 5 + 1 = 23
+    node *tree = malloc(sizeof(node));
+    tree->type = ADD;
+    tree->r = new_node((node){
+        .type=ADD, 
+        .l=new_node((node){
+            .type=MULTI, 
+            .l=new_node((node){
+                .type=VAL, 
+                .val= 4}),
+            .r=new_node((node){
+                .type=VAL, 
+                .val= 5})}),
+        .r=new_node((node){
+            .type=VAL, 
+            .val=1})});
+    tree->l = new_node((node){.type=VAL, .val=2});
+    return (tree);
+*/
+   // int n = 0;
     // static node *tree = NULL;
     // if (*s == '\0')
     //     return (tree);
@@ -85,6 +101,106 @@ node *pars_expr(char *s)
     //     s++;
     //     return(pars_expr(s));
     // }
+
+int find_plus(char *str)
+{
+    int i = 0;
+    if (!str)
+        return (-1);
+    while (str[i] != '\0')
+    {
+        if (str[i] == '+')
+            return (i);
+        i++;
+    }
+    return (-1);
+}
+
+int find_mult(char *str)
+{
+    int i = 0;
+    if (!str)
+        return (-1);
+    while (str[i] != '\0')
+    {
+        if (str[i] == '*')
+            return (i);
+        i++;
+    }
+    return (-1);
+}
+
+node *make_tree(node *tree, char *s)
+{
+    int loc = 0;
+    if (find_plus(s) == -1 || !find_mult(s))
+    {
+        tree = new_node((node){.type=VAL,.val=atoi(s), .l=NULL, .r=NULL});
+    }
+    if (find_plus(s) != -1)
+    {
+        loc = find_plus(s);
+        if (loc != -1)
+        {
+            s[loc]= '\0';
+            tree = new_node((node){
+                .type=ADD,
+                .l=NULL,
+                .r=NULL
+            });
+            tree->l = (make_tree(tree->l, s));
+            tree->r = (make_tree(tree->r, s + loc + 1));
+        }
+    }
+    if (find_mult(s) != -1)
+    {
+        loc = find_mult(s);
+        if (loc != -1)
+        {
+            s[loc]= '\0';
+            tree = new_node((node){
+                .type=MULTI,
+                .l=NULL,
+                .r=NULL
+            });
+            tree->l = (make_tree(tree->l, s));
+            tree->r = (make_tree(tree->r, s + loc + 1));
+        }
+    }
+    return (tree);
+}
+
+void    print_tree(node *tree)
+{
+    if (!tree)
+    {
+        printf("Empty");
+        return;
+    }
+    switch (tree->type)
+    {
+        case(VAL):
+            printf("%d\n", tree->val);
+            break;
+        case(ADD):
+            print_tree(tree->l);
+            print_tree(tree->r);
+            break;
+        case(MULTI):
+            print_tree(tree->l);
+            print_tree(tree->r);
+            break;
+
+    }
+
+}
+
+node *pars_expr(char *s)
+{
+    node *tree=NULL;
+
+    tree = make_tree(tree, s);
+    //print_tree(tree);
     return (tree);
 
 // change here
