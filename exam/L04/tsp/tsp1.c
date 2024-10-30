@@ -39,6 +39,7 @@ double get_distance(int len, t_cord arr[len], int combi[len])
 {
 	double total = 0;
 	t_cord path[len+1];
+
 	for (int i = 0; i < len; i++)
 	{
 		path[i].x = arr[combi[i]].x;
@@ -59,13 +60,14 @@ void	find_combi(int len, t_cord arr[11], int combi[len], int idx)
 	if (arr == NULL)
 	{
 		printf("min: %.2f\n", min);
+		min = INFINITY;
 		return;
 	}
 	if (idx == len)
 	{
 		//print_arr(len, combi);
 		double temp = get_distance(len, arr, combi);
-		printf("temp: %.2f\n", temp);
+		// printf("temp: %.2f\n", temp);
 		if (temp < min)
 			min = temp;
 		return;
