@@ -81,12 +81,12 @@ char *make_string(FILE *stream, char c)
 			ungetc(a, stream);
 			break;
 		}
-		// printf("%c ", a);
 		str = add_letter(str, a);
 	}
 	if (!expect(stream, c))
 	{
-		free(str);
+		if (str)
+			free(str);
 		return (NULL);
 	}
 	return (str);
@@ -120,11 +120,8 @@ int argo(json *dst, FILE *stream)
 	{
 		dst->type = STRING;
 		dst->string = make_string(stream, c);
-		//printf("str: ");
 		if (!dst->string)
 			return (-1);
-		// printf("%s\n", dst->string);
-		return (1);
 	}
 	else if (isdigit(c) || (c == '+' || c == '-'))
 	{
@@ -144,17 +141,12 @@ int argo(json *dst, FILE *stream)
 		dst->string = NULL;
 		dst->integer = make_integer(stream, c);
 		dst->integer *= sign;
-		// printf("num: ");
-		// printf("%d\n", dst->integer);
-		return (1);
 	}
 	else if (c == '{')
 	{
-		//dst = malloc(sizeof(json) * 1);
 		dst->type = MAP;
 		dst->map.size = 1;
-		dst->map.data = NULL; //malloc(sizeof(pair) * 1);
-		//int i = 0;
+		dst->map.data = NULL;
 		char sep = ',';
 		char next = ':';
 		a = getc(stream);
@@ -172,17 +164,10 @@ int argo(json *dst, FILE *stream)
 			// if (!expect(stream, '"'))
 		 	// 	return (-1);
 			dst->map.data[dst->map.size - 1].key = make_string(stream, c);
-			// printf("key: ");
 			if (!dst->map.data[dst->map.size - 1].key)
-			{
 				return (-1);
-			}
-			// printf("%s\n", dst->map.data[dst->map.size - 1].key);
-			//seperator
 			if (!expect(stream, ':'))
-			{
 		 		return (-1);
-			}
 			return(argo(&dst->map.data[dst->map.size - 1].value, stream));
 			if (peek(stream) != sep)
 				break;
@@ -194,17 +179,15 @@ int argo(json *dst, FILE *stream)
 		}
 		next = '}';
 		if (!expect(stream, next))
-		{
 		 	return (-1);
-		}
-		return (1);
+	}
+	if (!expect(stream, EOF))
+	{
+			dst->type = MAP;
+			dst->map.size = 0;
+			dst->map.data = NULL;
+			return (-1);
 	}
 	else
-	{
-		expect(stream, EOF);
-		dst->type = MAP;
-		dst->map.size = 0;
-		dst->map.data = NULL;
-		return (-1);
-	}
+		return(1);
 }
