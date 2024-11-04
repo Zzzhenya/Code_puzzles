@@ -182,12 +182,7 @@ int argo(json *dst, FILE *stream)
 		 	return (-1);
 	}
 	if (!expect(stream, EOF))
-	{
-			dst->type = MAP;
-			dst->map.size = 0;
-			dst->map.data = NULL;
-			return (-1);
-	}
+		return (-1);
 	else
 		return(1);
 }
