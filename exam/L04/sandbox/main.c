@@ -3,6 +3,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int sandbox(void(*f)(void), unsigned int timeout, bool verbose);
 
@@ -30,6 +31,12 @@ void function1(void)
     }
 }
 
+void function3(void)
+{
+    sleep(4);
+    exit(1);
+}
+
 #include <string.h>
 void function2(void)
 {
@@ -49,7 +56,8 @@ int sandbox(void(*f)(void), unsigned int timeout, bool verbose)
     if (pid == 0)
     {
         //if (
-        alarm(timeout);// == 0)
+        if (alarm(timeout) != 0)
+            return (-1);
         //    return (-1);
         f();
         return (0);
@@ -57,11 +65,17 @@ int sandbox(void(*f)(void), unsigned int timeout, bool verbose)
     else
     {
         waitpid(pid, &status, 0);
-        if WIFSIGNALED(status)
+        if (WIFSIGNALED(status))
         {
             int val = WTERMSIG(status);
             printf("Exited with sig %s\n", strsignal(val));
             return (0);
+        }
+        else if (WIFEXITED(status))
+        {
+            int val = WEXITSTATUS(status);
+            printf("Exited with exitcode %d\n", val);
+            return (0); 
         }
         else
             return (1);
@@ -73,6 +87,8 @@ int main(void)
     printf("sandbox: %d %d\n", 1,  sandbox(function1, 3, false));
     printf("sandbox: %d %d\n", 2,  sandbox(function2, 1000, false));
     printf("sandbox: %d %d\n", 1,  sandbox(function1, 0, false));
+    printf("sandbox: %d %d\n", 1,  sandbox(function3, 5, false));
+    printf("sandbox: %d %d\n", 1,  sandbox(function4, 10, false));
     //function2();
     return (0);
 }
