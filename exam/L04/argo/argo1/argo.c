@@ -139,6 +139,12 @@ int ft_argo(json *dst, FILE *stream)
 			// detect start of value
 			if (!expect(stream, ':'))
 		 		return (-1);
+		 	// when the value is empty
+		 	if (peek(stream) == '}')
+		 	{
+		 		unexpected(stream);
+				return (-1);
+		 	}
 		 	// extract value
 			ft_argo(&dst->map.data[dst->map.size - 1].value, stream);
 			// check for more key value pairs
