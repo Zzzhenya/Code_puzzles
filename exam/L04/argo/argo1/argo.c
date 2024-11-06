@@ -68,13 +68,19 @@ int parse_string(json *dst, FILE *stream)
 		if (a == '\\' && peek(stream) == '"')
 			a = getc(stream);
 		else if (a == '"')
+		{
+			ungetc(a, stream);
 			break;
+		}
 		int len = ft_strlen(dst->string);
 		dst->string = realloc(dst->string, len + 2);
 		dst->string[len] = a;
 		dst->string[len + 1] = '\0';
 	}
-	return (1);
+	if (expect(stream, '"'))
+		return (1);
+	else
+		return (-1);
 }
 
 char *get_string(FILE *stream)
@@ -86,13 +92,19 @@ char *get_string(FILE *stream)
 		if (a == '\\' && peek(stream) == '"')
 			a = getc(stream);
 		else if (a == '"')
+		{
+			ungetc(a, stream);
 			break;
+		}
 		int len = ft_strlen(string);
 		string = realloc(string, len + 2);
 		string[len] = a;
 		string[len + 1] = '\0';
 	}
-	return (string);
+	if (expect(stream, '"'))
+		return (string);
+	else
+		return (NULL);
 }
 
 int ft_argo(json *dst, FILE *stream)
