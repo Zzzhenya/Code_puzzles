@@ -73,7 +73,7 @@ int parse_string(json *dst, FILE *stream)
 			break;
 		}
 		int len = ft_strlen(dst->string);
-		dst->string = realloc(dst->string, len + 2);
+		dst->string = realloc(dst->string, (sizeof(char)) * (len + 2));
 		dst->string[len] = a;
 		dst->string[len + 1] = '\0';
 	}
@@ -121,11 +121,7 @@ int ft_argo(json *dst, FILE *stream)
 		dst->map.data = NULL;
 		while (peek(stream) != EOF)
 		{
-			pair *temp = NULL;
-			temp = realloc( dst->map.data , sizeof(pair) * dst->map.size);
-			if (dst->map.data)
-				free (dst->map.data);
-			dst->map.data = temp;
+			dst->map.data= realloc( dst->map.data , sizeof(pair) * dst->map.size);
 			dst->map.data[dst->map.size - 1].value.type = MAP;
 			dst->map.data[dst->map.size - 1].value.map.size = 0;
 			dst->map.data[dst->map.size - 1].value.map.data = NULL;
@@ -146,7 +142,8 @@ int ft_argo(json *dst, FILE *stream)
 				return (-1);
 		 	}
 		 	// extract value
-			ft_argo(&dst->map.data[dst->map.size - 1].value, stream);
+			if (ft_argo(&dst->map.data[dst->map.size - 1].value, stream) == -1)
+				return (-1);
 			// check for more key value pairs
 			if (peek(stream) != ',')
 				break;
