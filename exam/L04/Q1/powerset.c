@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 {
 	if (argc < 3)
 	{
-		printf("./a.out <sum> <val1> <val2> ...\n")
+		printf("./a.out <sum> <val1> <val2> ...\n");
 		return (1);
 	}
 	int sum = atoi(argv[1]);
@@ -81,8 +81,6 @@ int main(int argc, char **argv)
 	while (i <= size)
 	{
 		int arr[i];
-		for (int j = 0; j < i; j++)
-			arr[j] = 0;
 		get_combi(size, num, i, arr, 0, sum);
 		i++;
 	}
