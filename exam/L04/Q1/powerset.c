@@ -68,7 +68,10 @@ void	get_combi(int size, int num[size], int len, int arr[len], int idx, int sum)
 int main(int argc, char **argv)
 {
 	if (argc < 3)
+	{
+		printf("./a.out <sum> <val1> <val2> ...\n")
 		return (1);
+	}
 	int sum = atoi(argv[1]);
 	int size = argc - 2;
 	int num[size];
