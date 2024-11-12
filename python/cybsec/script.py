@@ -3,7 +3,7 @@ import requests
 import re
 import shutil
 
-mainurl = 'https://toscrape.com/'
+mainurl = 'https://en.wikipedia.org/wiki/Main_Page'
 ext = 'iso'
 
 # sends a get reuest to specified url
@@ -27,12 +27,19 @@ name = "img"
 num = 1
 for url in image_urls:
 	file_name = name + "_" + str(num) + re.split(r'/', url.lstrip('/'))[-1]
-	new_url = mainurl+url.removeprefix('./')
+	if ((url[0] == '.') & (url[1] == '/')):
+		new_url = mainurl+url.removeprefix('./')
+	elif((url[0] == '/') & (url[1] != '/')):
+		new_url = mainurl+url#.removeprefix('/')
+	elif((url[0] == '/') & (url[1] == '/')):
+		new_url = "https:"+url
+	else:
+		new_url = url
 	res = requests.get(new_url, stream = True)
 	if res.status_code == 200:
 		with open(file_name,'wb') as f:
 			shutil.copyfileobj(res.raw, f)
 		print('Image sucessfully Downloaded: ',file_name)
 	else:
-		print('Image Couldn\'t be retrieved')
+		print('Image Couldn\'t be retrieved', url, new_url,  res.status_code)
 	num += 1
