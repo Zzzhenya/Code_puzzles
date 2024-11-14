@@ -3,8 +3,13 @@
 
 enum e_type
 {
+    LEFT_PAREN,
+    RIGHT_PAREN,
+    ADD,
     MULTI,
-    ADD
+    NUM,
+    EOL,
+    EO,
 };
 
 class Token

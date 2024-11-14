@@ -10,9 +10,13 @@ class Scanner
     public:
         Scanner(char *str);
         ~Scanner(void){};
-        
+
         std::list<Token>    scanTokens(void);
         void                printTokens(void);
+        void                error(int line, std::string message)
+        {
+            
+        }
         
     private:
         std::list<Token>    _tokens;

@@ -13,15 +13,18 @@ Scanner::Scanner(char *str)
 
 std::list<Token> Scanner::scanTokens(void)
 {
-    for (
-        std::string::iterator it = _str.begin();
-        it != _str.end();
-        it++
-    )
-    {
-        _tokens.push_back(Token(ADD,*it));
-    }
-    return (_tokens);
+    
+    // for (
+    //     std::string::iterator it = _str.begin();
+    //     it != _str.end();
+    //     it++
+    // )
+    // {
+    //     (*it).scanToken();
+    //     // scanToken(*it);
+    //     //_tokens.push_back(Token(ADD,*it));
+    // }
+    // return (_tokens);
 }
 
 void    Scanner::printTokens(void)
