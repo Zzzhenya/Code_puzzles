@@ -140,6 +140,9 @@ def main():
     scan_and_find(args.url[0], args.url[0], args.rec, args.l[0], args.p[0], 0, requests.get(args.url[0]).text, ftypes, img_arr)
     # for img in img_arr:
     #     print(img[0] , " : ", img[1])
+    if (len(img_arr) == 0):
+        print('No images')
+        return
     download_images(img_arr)
     # find_links(args)
 
