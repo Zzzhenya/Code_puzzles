@@ -3,9 +3,9 @@ NAME = spider
 all:$(NAME)
 
 #brew install virtualenv
-#virtualenv env
+#python3 -m venv env
 $(NAME): requirements.txt spider.py Makefile
-	python3 -m venv env
+	virtualenv env
 	. env/bin/activate && pip install --upgrade pip && pip install -r requirements.txt  
 	cp spider.py spider && chmod +x spider
 

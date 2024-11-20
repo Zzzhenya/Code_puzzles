@@ -1,32 +1,29 @@
 #!/usr/bin/python3
 
-import sys
 import os
 import argparse
 import requests
-import re
 import shutil
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin    
+from colorama import Fore, Back, Style
+import time
 '''
 /Users/shenya/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:34: 
 NotOpenSSLWarning: urllib3 v2.0 only supports OpenSSL 1.1.1+, 
 currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. 
 See: https://github.com/urllib3/urllib3/issues/3020
 '''
-import time
-
 '''
 Parse and receive arguments for the program
 '''
 def get_args():
     parser = argparse.ArgumentParser(prog='Spider')
     parser.add_argument('-r', action='store_true', dest='rec', required=False)
-    parser.add_argument('-l', nargs=1, action='store', dest='l', type =int, default=[2])
+    parser.add_argument('-l', nargs=1, action='store', dest='l', type =int, default=[5])
     parser.add_argument('-p', nargs=1, action = 'store', dest='p', default=['./data/'])
     parser.add_argument(nargs=1, action = 'store', dest='url')
     args = parser.parse_args()
-    #parser.print_help()
     return (args)
 
 '''
@@ -53,53 +50,83 @@ def make_directory(path):
         print (f"Exception: {e}")
         return (0)
 
-def scan_and_find(web_url, link, r, r_levels, save_path, idx, page):
+def right_img_type(url, ftypes):
+    for ty in ftypes:
+        if url.endswith(ty) == True:
+            return (True)
+    return (False)
+
+def find_images_get(web_url, link, save_path, idx, ftypes, url, img_arr):
+    i = 1
+    if url is not None:
+        if url.startswith('https://') != True:
+            url = urljoin(web_url, url)
+        print(url)
+        if (right_img_type(url, ftypes) != 1):
+            qp_url = url[:url.find('?')]
+            if right_img_type(qp_url, ftypes) != 1:
+                return
+            else:
+                qp_url + str(i)
+                i = i+1
+        else:
+            qp_url = url
+        file_name = save_path + qp_url.replace('/', '_')
+        img_arr.add(tuple([url, file_name]))
+
+def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_arr):
     if (idx == r_levels):
         return
-    if (page == 0):
+    if (page is None):
         return
+    print(idx)
     soup = BeautifulSoup(page, 'html.parser')
     # check if BS4 or requests returns a html or a file
-    #/Users/shenya/das-kleine-projekt/AOC_2023/python/spider/./spider:55: MarkupResemblesLocatorWarning: The input looks more like a filename than markup. 
+    #/ The input looks more like a filename than markup. 
     #You may want to open this file and pass the filehandle into Beautiful Soup.
     image_elements = soup.find_all('img')
-    if (image_elements == 0):
-        return
-    image_urls =  [img['src'] for img in image_elements]
-    for url in image_urls:
-        if url is not None:
-            if url.startswith('https://'):
-                continue
-            else:
-                url = urljoin(web_url, url)
-            file_name = save_path + url.replace('/', '_')
-            print(idx, ": ", link, " ", url, " ", file_name)
-        res = requests.get(url, stream = True)
-        if res.status_code == 200:
-            with open(file_name,'wb') as f:
-                shutil.copyfileobj(res.raw, f)
-            print('Done!!')
-        else:
-            print('\t\t FAILED!!', url,  res.status_code)
+    if (image_elements is not None):
+        image_urls =  [img['src'] for img in image_elements]
+        for url in image_urls:
+            find_images_get(web_url, link, save_path, idx, ftypes, url, img_arr)
     links = soup.find_all("a")
-    if (links == 0):
+    if (links is None):
         return
-    arr = []
+    arr = set()
     for link in links:
         if link is not None:
-            arr.append(link.get("href"))
-        #print(link.get("href"))
+            if right_img_type(url, ftypes) == 0:
+                arr.add(link.get("href"))
     for link in arr:
         if link is not None:
-            if link.startswith('https://'):
-                continue
-            else:
+            if link.startswith('https://') != True | link.startswith('http://'):
                 link = urljoin(web_url, link)
             new_page = requests.get(link).text
-            scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page)
+            scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page, ftypes, img_arr)
+
+def download_images(img_arr):
+    #print(idx, ": ", link, " ", url, " ", file_name)
+    file_count = 0
+    for img in img_arr:
+        print(img[0] , " : ", img[1])
+        url = img[0]
+        file_name = img[1]
+        res = requests.get(url, stream = True)
+        if res.status_code == 200:
+            if file_count == 5:
+                time.sleep(1)
+                file_count = 0
+            with open(file_name,'wb') as f:
+                shutil.copyfileobj(res.raw, f)
+            print(Fore.GREEN + 'Success!!' + Style.RESET_ALL)
+            file_count = file_count + 1
+        else:
+            print(Fore.RED, 'FAILED!!', url,  res.status_code, Style.RESET_ALL)
 
 def main():
     args = get_args()
+    if (args.rec == False):
+        args.l[0] = 1
     # make directory if there is no data directory 
     # or mentioned path
     print_args(args)
@@ -108,7 +135,12 @@ def main():
     # print(page)
     if (make_directory(args.p[0]) == 0):
         return
-    scan_and_find(args.url[0], args.url[0], args.rec, args.l[0], args.p[0], 0, requests.get(args.url[0]).text)
+    ftypes = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
+    img_arr = set()
+    scan_and_find(args.url[0], args.url[0], args.rec, args.l[0], args.p[0], 0, requests.get(args.url[0]).text, ftypes, img_arr)
+    # for img in img_arr:
+    #     print(img[0] , " : ", img[1])
+    download_images(img_arr)
     # find_links(args)
 
 if __name__ == "__main__":
