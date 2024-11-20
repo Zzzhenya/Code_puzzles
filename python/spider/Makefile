@@ -1,0 +1,19 @@
+NAME = spider
+
+all:$(NAME)
+
+#brew install virtualenv
+#virtualenv env
+$(NAME): requirements.txt spider.py Makefile
+	python3 -m venv env
+	. env/bin/activate && pip install --upgrade pip && pip install -r requirements.txt  
+	cp spider.py spider && chmod +x spider
+
+fclean: 
+	rm -rf spider
+	rm -rf env
+	rm -rf data
+
+
+#Python/3.9/lib/python/site-packages/urllib3/__init__.py:34: NotOpenSSLWarning: urllib3 v2.0 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+ # warnings.warn(
