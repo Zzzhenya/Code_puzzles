@@ -5,7 +5,7 @@ import argparse
 import requests
 import shutil
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin    
+from urllib.parse import urljoin, urlparse
 from colorama import Fore, Back, Style
 import time
 '''
@@ -13,6 +13,9 @@ import time
 NotOpenSSLWarning: urllib3 v2.0 only supports OpenSSL 1.1.1+, 
 currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. 
 See: https://github.com/urllib3/urllib3/issues/3020
+
+/ The input looks more like a filename than markup. 
+You may want to open this file and pass the filehandle into Beautiful Soup.
 '''
 '''
 Parse and receive arguments for the program
@@ -81,9 +84,6 @@ def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_
         return
     print(idx)
     soup = BeautifulSoup(page, 'html.parser')
-    # check if BS4 or requests returns a html or a file
-    #/ The input looks more like a filename than markup. 
-    #You may want to open this file and pass the filehandle into Beautiful Soup.
     image_elements = soup.find_all('img')
     if (image_elements is not None):
         image_urls =  [img['src'] for img in image_elements]
@@ -92,27 +92,35 @@ def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_
     links = soup.find_all("a")
     if (links is None):
         return
+    links = [x.get('href') for x in soup.select('a') if 'mailto' not in x.get('href')]
     arr = set()
     for link in links:
         if link is not None:
-            if right_img_type(url, ftypes) == 0:
-                arr.add(link.get("href"))
+            arr.add(link)
+            # arr.add(link.get("href"))
     for link in arr:
         if link is not None:
-            if link.startswith('https://') != True | link.startswith('http://'):
+            if link.startswith('https://') != True :
                 link = urljoin(web_url, link)
-            new_page = requests.get(link).text
-            scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page, ftypes, img_arr)
+                print(link)
+            if (link != 'javascript:void(0)'):
+                new_page = requests.get(link)
+                if (new_page.ok):
+                    scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page.text, ftypes, img_arr)
+
 
 def download_images(img_arr):
-    #print(idx, ": ", link, " ", url, " ", file_name)
     file_count = 0
+    long_names = 1
     for img in img_arr:
         print(img[0] , " : ", img[1])
         url = img[0]
         file_name = img[1]
+        if (len(file_name) > 256):
+            file_name = filename[:250] + str(long_names)
+            long_names = long_names + 1
         res = requests.get(url, stream = True)
-        if res.status_code == 200:
+        if res.ok:
             if file_count == 5:
                 time.sleep(1)
                 file_count = 0
@@ -121,7 +129,13 @@ def download_images(img_arr):
             print(Fore.GREEN + 'Success!!' + Style.RESET_ALL)
             file_count = file_count + 1
         else:
-            print(Fore.RED, 'FAILED!!', url,  res.status_code, Style.RESET_ALL)
+            print(Fore.RED, 'IMG FAILED!!', url,  res.status_code, Style.RESET_ALL)
+
+def get_domain(url):
+    obj = urlparse(url)
+    new_url = obj.scheme + '://' + obj.netloc
+    print(url, " : ", new_url)
+    return (new_url)
 
 def main():
     args = get_args()
@@ -137,9 +151,14 @@ def main():
         return
     ftypes = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
     img_arr = set()
-    scan_and_find(args.url[0], args.url[0], args.rec, args.l[0], args.p[0], 0, requests.get(args.url[0]).text, ftypes, img_arr)
-    # for img in img_arr:
-    #     print(img[0] , " : ", img[1])
+    domain = get_domain(args.url[0])
+    print(domain)
+    page = requests.get(args.url[0])
+    if (page.ok):
+        print("OK\t", args.url[0])
+        scan_and_find(domain, args.url[0], args.rec, args.l[0], args.p[0], 0, page.text, ftypes, img_arr)
+    # # for img in img_arr:
+    # #     print(img[0] , " : ", img[1])
     if (len(img_arr) == 0):
         print('No images')
         return
