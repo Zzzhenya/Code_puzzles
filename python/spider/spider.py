@@ -90,6 +90,8 @@ def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_
         image_urls =  [img['src'] for img in image_elements]
         for url in image_urls:
             find_images_get(web_url, link, save_path, idx, ftypes, url, img_arr)
+    if (r == False):
+        return
     links = soup.find_all("a")
     if (links is None):
         return
