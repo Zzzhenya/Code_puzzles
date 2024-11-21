@@ -61,21 +61,22 @@ def right_img_type(url, ftypes):
 
 def find_images_get(web_url, link, save_path, idx, ftypes, url, img_arr):
     i = 1
-    if url is not None:
-        if url.startswith('https://') != True:
-            url = urljoin(web_url, url)
-        print(url)
-        if (right_img_type(url, ftypes) != 1):
-            qp_url = url[:url.find('?')]
-            if right_img_type(qp_url, ftypes) != 1:
-                return
-            else:
-                qp_url + str(i)
-                i = i+1
+    if url is None:
+        return
+    if url.startswith('https://') != True:
+        url = urljoin(web_url, url)
+    print(url)
+    if (right_img_type(url, ftypes) != 1):
+        qp_url = url[:url.find('?')]
+        if right_img_type(qp_url, ftypes) != 1:
+            return
         else:
-            qp_url = url
-        file_name = save_path + qp_url.replace('/', '_')
-        img_arr.add(tuple([url, file_name]))
+            qp_url + str(i)
+            i = i+1
+    else:
+        qp_url = url
+    file_name = save_path + qp_url.replace('/', '_')
+    img_arr.add(tuple([url, file_name]))
 
 def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_arr):
     if (idx == r_levels):
@@ -117,7 +118,7 @@ def download_images(img_arr):
         url = img[0]
         file_name = img[1]
         if (len(file_name) > 256):
-            file_name = filename[:250] + str(long_names)
+            file_name = filename[10:] + str(long_names)
             long_names = long_names + 1
         res = requests.get(url, stream = True)
         if res.ok:
