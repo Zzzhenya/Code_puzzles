@@ -106,15 +106,15 @@ def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_
         if link is not None:
             if link.startswith('https://') != True :
                 link = urljoin(web_url, link)
-            if (link != 'javascript:void(0)'):
-                if 'mailto' not in link:
-                    try:
-                        new_page = requests.get(link,  timeout=(None, 2))
-                        if (new_page.status_code == 200):
-                            print(link)
-                            scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page.text, ftypes, img_arr)
-                    except requests.exceptions.Timeout:
-                        print('The request timed out')
+            try:
+                new_page = requests.get(link,  timeout=(None, 2))
+                if (new_page.status_code == 200):
+                    print(link)
+                    scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page.text, ftypes, img_arr)
+            except requests.exceptions.Timeout:
+                print(f'Exception: The request timed out{link}')
+            except requests.exceptions as e:
+                print(f'Exception: {e}')
 
 
 def download_images(img_arr):
@@ -158,22 +158,26 @@ def main():
     # print(page)
     if (make_directory(args.p[0]) == 0):
         return
+    if (args.p[0].endswith('/') == False):
+        args.p[0] =  args.p[0] + '/'
     ftypes = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
     img_arr = set()
     domain = get_domain(args.url[0])
     print(domain)
     try:
         page = requests.get(args.url[0],  timeout=(None, 2))
+        if (page.status_code == 200):
+            scan_and_find(domain, args.url[0], args.rec, args.l[0], args.p[0], 0, page.text, ftypes, img_arr)
+        # # for img in img_arr:
+        # #     print(img[0] , " : ", img[1])
+        if (len(img_arr) == 0):
+            print('No images')
+            return
+        download_images(img_arr)
     except requests.exceptions.Timeout:
-        print('The request timed out', args.url[0])
-    if (page.status_code == 200):
-        scan_and_find(domain, args.url[0], args.rec, args.l[0], args.p[0], 0, page.text, ftypes, img_arr)
-    # # for img in img_arr:
-    # #     print(img[0] , " : ", img[1])
-    if (len(img_arr) == 0):
-        print('No images')
-        return
-    download_images(img_arr)
+        print('Exception: The request timed out', args.url[0])
+    except requests.exceptions as e:
+        print(f'Exception: {e}')
 
 if __name__ == "__main__":
     main()
