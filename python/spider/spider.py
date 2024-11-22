@@ -95,11 +95,13 @@ def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_
     links = soup.find_all("a")
     if (links is None):
         return
-    links = [x.get('href') for x in soup.select('a') if 'mailto' not in x.get('href')]
+    # links = [ x.get('href') for x in soup.select('a') if 'mailto' not in x.get('href')]
     arr = set()
     for link in links:
         if link is not None:
-            arr.add(link)
+            if (link != 'javascript:void(0)'):
+                if 'mailto' not in link:
+                    arr.add(link.get("href"))
             # arr.add(link.get("href"))
     for link in arr:
         if link is not None:
@@ -107,9 +109,10 @@ def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_
                 link = urljoin(web_url, link)
                 print(link)
             if (link != 'javascript:void(0)'):
-                new_page = requests.get(link)
-                if (new_page.ok):
-                    scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page.text, ftypes, img_arr)
+                if 'mailto' not in link:
+                    new_page = requests.get(link)
+                    if (new_page.ok):
+                        scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page.text, ftypes, img_arr)
 
 
 def download_images(img_arr):
@@ -120,7 +123,7 @@ def download_images(img_arr):
         url = img[0]
         file_name = img[1]
         if (len(file_name) > 256):
-            file_name = filename[10:] + str(long_names)
+            file_name = filename[256 - 10:] + str(long_names)
             long_names = long_names + 1
         res = requests.get(url, stream = True)
         if res.ok:
@@ -128,7 +131,8 @@ def download_images(img_arr):
                 time.sleep(1)
                 file_count = 0
             with open(file_name,'wb') as f:
-                shutil.copyfileobj(res.raw, f)
+                f.write(res.content)
+                # shutil.copyfileobj(res.raw, f)
             print(Fore.GREEN + 'Success!!' + Style.RESET_ALL)
             file_count = file_count + 1
         else:
