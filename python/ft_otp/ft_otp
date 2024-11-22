@@ -19,9 +19,18 @@ def print_args():
     print(f'{"cmd":8}: {sys.argv[1][1]}')
     print(f'{"link":8}: {sys.argv[2]}')
 
-def process_and_store_key(hexa_key):
+def key_is_64(hexa_key):
+    if (len(hexa_key) < 64):
+        raise Exception('Key too short: len should be 64')
+    if (len(hexa_key) > 64):
+        raise Exception('Key too long: len should be 64')
 
-def generate_temp_password(key_file):
+
+def process_and_store_key(hexa_key):
+    key_is_64(hexa_key)
+    print(hexa_key)
+
+# def generate_temp_password(key_file):
 
 def main():
     args, empty_args = get_args()
@@ -29,11 +38,16 @@ def main():
         print_args()
     else:
         return
-    if (sys.argv[1][1] == 'g'):
-        process_and_store_key(args.g)
-    else:
-        generate_temp_password(args.k)
     
+    if (sys.argv[1][1] == 'g'):
+        try:
+            process_and_store_key(args.g)
+        except Exception as e:
+            print(f'{e}')
+    else:
+        print("Hello")
+    # else:
+    #     generate_temp_password(args.k)
     
 
 if __name__ == "__main__":
