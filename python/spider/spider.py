@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from colorama import Fore, Back, Style
 import time
+import sys
 '''
 /Users/shenya/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:34: 
 NotOpenSSLWarning: urllib3 v2.0 only supports OpenSSL 1.1.1+, 
@@ -148,6 +149,10 @@ def get_domain(url):
 
 def main():
     args = get_args()
+    if (len(args.p[0]) == 0):
+        return
+    if (len(args.url[0]) == 0):
+        return
     if (args.rec == False):
         args.l[0] = 1
     # make directory if there is no data directory 
