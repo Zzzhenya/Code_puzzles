@@ -105,9 +105,9 @@ def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_
                     arr.add(link.get("href"))
     for link in arr:
         if link is not None:
-            if link.startswith('https://') != True :
-                link = urljoin(web_url, link)
             try:
+                if link.startswith('https://') != True :
+                    link = urljoin(web_url, link)
                 new_page = requests.get(link,  timeout=(None, 2))
                 if (new_page.status_code == 200):
                     print(link)
@@ -122,6 +122,7 @@ def download_images(img_arr):
     file_count = 0
     long_names = 1
     for img in img_arr:
+        # try:
         print(img[0] , " : ", img[1])
         url = img[0]
         file_name = img[1]
@@ -140,6 +141,8 @@ def download_images(img_arr):
             file_count = file_count + 1
         else:
             print(Fore.RED, 'IMG FAILED!!', url,  res.status_code, Style.RESET_ALL)
+        # except requests.exceptions as e:
+        #     print(f'Exception: {e}')
 
 def get_domain(url):
     obj = urlparse(url)
@@ -167,6 +170,8 @@ def main():
         args.p[0] =  args.p[0] + '/'
     ftypes = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
     img_arr = set()
+    if (args.url[0].startswith("https://") == False | args.url[0].startswith("http://") == False):
+        args.url[0] = 'https://' + args.url[0]
     domain = get_domain(args.url[0])
     print(domain)
     try:
