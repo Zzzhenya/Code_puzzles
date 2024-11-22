@@ -7,7 +7,7 @@ all:$(NAME)
 #virtualenv env
 $(NAME): requirements.txt spider.py Makefile
 	virtualenv env
-	. env/bin/activate && pip3 install --upgrade pip && pip3 install -r requirements.txt  
+	. env/bin/activate && pip3 install --upgrade pip && pip3 install -r requirements.txt  && python3 -m pip install --upgrade Pillow
 	cp spider.py spider && chmod +x spider
 	cp scorpion.py scorpion && chmod +x scorpion
 

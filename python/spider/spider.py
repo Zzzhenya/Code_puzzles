@@ -4,6 +4,7 @@ import os
 import argparse
 import requests
 import shutil
+import urllib
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from colorama import Fore, Back, Style
@@ -95,24 +96,25 @@ def scan_and_find(web_url, link, r, r_levels, save_path, idx, page, ftypes, img_
     links = soup.find_all("a")
     if (links is None):
         return
-    # links = [ x.get('href') for x in soup.select('a') if 'mailto' not in x.get('href')]
     arr = set()
     for link in links:
         if link is not None:
             if (link != 'javascript:void(0)'):
                 if 'mailto' not in link:
                     arr.add(link.get("href"))
-            # arr.add(link.get("href"))
     for link in arr:
         if link is not None:
             if link.startswith('https://') != True :
                 link = urljoin(web_url, link)
-                print(link)
             if (link != 'javascript:void(0)'):
                 if 'mailto' not in link:
-                    new_page = requests.get(link)
-                    if (new_page.ok):
-                        scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page.text, ftypes, img_arr)
+                    try:
+                        new_page = requests.get(link,  timeout=(None, 2))
+                        if (new_page.status_code == 200):
+                            print(link)
+                            scan_and_find(web_url, link, r, r_levels, save_path, idx + 1, new_page.text, ftypes, img_arr)
+                    except requests.exceptions.Timeout:
+                        print('The request timed out')
 
 
 def download_images(img_arr):
@@ -160,9 +162,11 @@ def main():
     img_arr = set()
     domain = get_domain(args.url[0])
     print(domain)
-    page = requests.get(args.url[0])
-    if (page.ok):
-        print("OK\t", args.url[0])
+    try:
+        page = requests.get(args.url[0],  timeout=(None, 2))
+    except requests.exceptions.Timeout:
+        print('The request timed out', args.url[0])
+    if (page.status_code == 200):
         scan_and_find(domain, args.url[0], args.rec, args.l[0], args.p[0], 0, page.text, ftypes, img_arr)
     # # for img in img_arr:
     # #     print(img[0] , " : ", img[1])
@@ -170,7 +174,6 @@ def main():
         print('No images')
         return
     download_images(img_arr)
-    # find_links(args)
 
 if __name__ == "__main__":
     main()
