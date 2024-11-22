@@ -127,7 +127,7 @@ def download_images(img_arr):
         url = img[0]
         file_name = img[1]
         if (len(file_name) > 256):
-            file_name = filename[256 - 10:] + str(long_names)
+            file_name = file_name[256 - 10:] + str(long_names)
             long_names = long_names + 1
         res = requests.get(url, stream = True)
         if res.ok:
