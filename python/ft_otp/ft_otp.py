@@ -5,6 +5,8 @@ import sys
 from cryptography.fernet import Fernet
 import pyotp
 import os
+import pyotp
+import time
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -64,8 +66,6 @@ def generate_temp_password(key_file):
         original = file.read()
     # print(str(fernet.decrypt(original))[2:-1])
     # create a new temporary password
-    import pyotp
-    import time
     #
     totp = pyotp.TOTP('base32secret3232')
     val = totp.now()
