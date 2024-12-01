@@ -12,6 +12,9 @@ for row in rows:
     second.append(int(duo[1]))
     size += 1
 
+first.sort()
+second.sort()
+
 def dup_count(li, val):
     ret = 0
     idx = 0
@@ -21,18 +24,11 @@ def dup_count(li, val):
         idx += 1
     return (ret)
 
-first.sort()
-second.sort()
-
+i = 0
 diff = 0
-i = 0
-while (i < size):
-    diff += abs(first[i] - second[i])
-    i += 1
-
-i = 0
 sim_score = 0
 while (i < size):
+    diff += abs(first[i] - second[i])
     sim_score += first[i] * dup_count(second, first[i])
     i += 1
 
