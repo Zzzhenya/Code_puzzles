@@ -2,8 +2,8 @@
 
 def compute(d, times):
 	i = 0
+	d1 = d.copy()
 	while (i < times):
-		d1 = d.copy()
 		for key,val in d.items():
 			d1[key] = d1.get(key, 0) - val
 			if key == 0:
@@ -33,3 +33,8 @@ for item in new_d:
 	total += new_d[item]
 
 print(total)
+
+dx = {}
+print("dict.get(1, 0)\t:", dx.get(1, 0))
+print("dict.get(1)\t:",dx.get(1))
+
