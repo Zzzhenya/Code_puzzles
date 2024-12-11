@@ -1,8 +1,10 @@
 #!/usr/local/bin/python3
-from collections import deque 
+
+import time
+st = time.time()
 
 def compute(line):
-	line1= deque([])
+	line1= []
 	times = 25
 	i = 0
 	while (i < times):
@@ -20,12 +22,18 @@ def compute(line):
 			else:
 				line1.append(item * 2024)
 		line = line1
-		line1 = deque([])
+		line1 = []
 		print(i, ": ",len(line))
 		i += 1
 	return (line)
 
-series = deque([814,1183689,0,1,766231,4091,93836,46])
+series = [814,1183689,0,1,766231,4091,93836,46]
 
 new_line = compute(series)
 print(len(new_line))
+
+et2 = time.time()
+print('ex time: ', et2-st, " s")
+
+
+
