@@ -9,7 +9,7 @@ def compute(line):
 		for item in line:
 			if (item == 0):
 				line1.append(1)
-			elif (item != 0 and not len(str(item))%2):
+			elif (not len(str(item))%2):
 				temp = str(item)
 				size =  len(temp)
 				loc = size//2

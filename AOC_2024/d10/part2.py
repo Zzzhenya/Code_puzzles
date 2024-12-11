@@ -8,7 +8,7 @@ def compute(d, times):
 			d1[key] = d1.get(key, 0) - val
 			if key == 0:
 				d1[1] = d1.get(1, 0) + val
-			elif (key != 0 and not len(str(key))%2):
+			elif (not len(str(key))%2):
 				temp = str(key)
 				size =  len(temp)
 				first = int(temp[:size//2])
