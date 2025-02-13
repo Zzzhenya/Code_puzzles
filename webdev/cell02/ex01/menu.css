@@ -69,14 +69,14 @@
 }
 
 .menu a {
- color: #fff;
+ color: White;
  padding: 1rem 1.5rem;
  display: block;
 }
 
 #ico-image
 {
-	font-family:Times New Roman;
+	font-family:'Times New Roman', Times, serif;
 	color:White;
 	padding-left:2px;
 	padding-right:2px;

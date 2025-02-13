@@ -1,0 +1,23 @@
+*
+{
+    font: normal "Lato", sans-serif;
+}
+
+.card
+{
+    background-color:Pink;
+    max-width:300px;
+    margin:auto;
+}
+
+h1 {
+    text-align: center;
+    padding-top:5%;
+}
+
+#profile-pic
+{
+    width:90%;
+    text-align:center;
+    position: relative;
+}
