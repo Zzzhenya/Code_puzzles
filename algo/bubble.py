@@ -1,3 +1,4 @@
+#ref: https://realpython.com/sorting-algorithms-python/#the-bubble-sort-algorithm-in-python
 
 def bubble(arr, comp):
 	size = len(arr)
