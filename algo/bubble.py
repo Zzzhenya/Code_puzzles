@@ -1,17 +1,45 @@
 #ref: https://realpython.com/sorting-algorithms-python/#the-bubble-sort-algorithm-in-python
+#ref: https://en.wikipedia.org/wiki/Bubble_sort
+
+'''
+procedure bubbleSort(A : list of sortable items)
+    n := length(A)
+    repeat
+        swapped := false
+        for i := 1 to n-1 inclusive do
+            { if this pair is out of order }
+            if A[i-1] > A[i] then
+                { swap them and remember something changed }
+                swap(A[i-1], A[i])
+                swapped := true
+            end if
+        end for
+    until not swapped
+end procedure
+'''
 import sys
 
 def bubble(arr, comp):
 	size = len(arr)
-	for i in range(size):
-		# _sorted = True
-		for j in range(size - i - 1):
-			comp += 1
-			if arr[j] > arr[j+1]:
-				arr[j], arr[j + 1] = arr[j + 1], arr[j]
-				_sorted = False
-		# if _sorted:
-		# 	break
+	# for i in range(size):
+	# 	_sorted = True
+	# 	for j in range(size - i - 1):
+	# 		comp += 1
+	# 		if arr[j] > arr[j+1]:
+	# 			arr[j], arr[j + 1] = arr[j + 1], arr[j]
+	# 			_sorted = False
+	# 	if _sorted:
+	# 		break
+	# return (arr, comp)
+	for j in range(size):
+		swapped = False
+		for i in range(1, size - j):
+			comp+=1
+			if (arr[i-1] > arr[i]):
+				arr[i], arr[i - 1] = arr[i - 1], arr[i]
+				swapped = True
+		if swapped == False:
+			break
 	return (arr, comp)
 
 def main():
