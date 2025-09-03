@@ -33,11 +33,13 @@ def bubble(arr, comp):
 	# return (arr, comp)
 	for j in range(size):
 		swapped = False
-		for i in range(1, size - j):
+		# for i in range(1, size - j):
+		for i in range(1, size - 1):
 			comp+=1
 			if (arr[i-1] > arr[i]):
 				arr[i], arr[i - 1] = arr[i - 1], arr[i]
 				swapped = True
+		size = size - 1
 		if swapped == False:
 			break
 	return (arr, comp)
