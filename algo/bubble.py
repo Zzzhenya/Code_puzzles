@@ -1,4 +1,5 @@
 #ref: https://realpython.com/sorting-algorithms-python/#the-bubble-sort-algorithm-in-python
+import sys
 
 def bubble(arr, comp):
 	size = len(arr)
@@ -15,7 +16,11 @@ def bubble(arr, comp):
 
 def main():
 	comp = 0
-	arr = [1, 2, 3 ,4, 7]
+	arr = []
+	for i in sys.argv:
+		if i != sys.argv[0]:
+			arr.append(int(i))
+	# arr = [1, 2, 3 ,4, 7]
 	new_arr, comp = bubble(arr, comp)
 	for x in new_arr:
 		print(x)
