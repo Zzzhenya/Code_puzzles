@@ -31,10 +31,10 @@
     "noUncheckedIndexedAccess": true,
 
     // here
-    // "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": true,
 
     // Style Options
-    // "noImplicitReturns": true,
+    "noImplicitReturns": true,
     // "noImplicitOverride": true,
     // "noUnusedLocals": true,
     // "noUnusedParameters": true,
@@ -43,13 +43,17 @@
 
     // Recommended Options
     // here
-    // "strict": true,
+    "strict": true,
     "jsx": "react-jsx",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
+
+    // Output
+    "removeComments": true, // remove comments in TS from JS
+    "noEmitOnError": true, // if there is an error don't create JS file
   },
   "include": [
     "**/*.ts"
