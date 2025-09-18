@@ -1,4 +1,4 @@
-import fastify from 'fastify'
+import fastify, { type FastifyReply, type FastifyRequest } from 'fastify'
 import cors from '@fastify/cors'
 
 const Fastify = fastify({logger:true});
@@ -6,7 +6,7 @@ const PORT = 5000
 
 //route -> method, path, handler
 
-Fastify.get('/', (req, reply) => {
+Fastify.get('/', async ( req: FastifyRequest, reply: FastifyReply) => {
   reply
     .code(200)
     .header('Content-Type', 'application/json; charset=utf-8')
