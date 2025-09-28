@@ -192,3 +192,11 @@ node_modules/undici
 
 Some issues need review, and may require choosing
 a different dependency.
+
+[Client]
+   ↓ HTTPS
+[NGINX (TLS, rate limiting, etc.)]
+   ↓ HTTP (internal)
+[Fastify API Gateway (auth, routing, proxy via undici)]
+   ↓
+[Microservices]

@@ -17,7 +17,7 @@
         console.error('Error fetching:', err);
         document.getElementById('greeting').textContent = 'Error fetching greeting';
       });
-    fetch('http://127.0.0.1:5000/users', { method: "GET"})
+    fetch('http://127.0.0.1:5000/users?id=123', { method: "GET"})
     .then(response => response.json())
     .then(data => {
         document.getElementById('users').textContent = data.hello;
