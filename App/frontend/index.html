@@ -6,8 +6,9 @@
 </head>
 <body>
   <h1 id="greeting">Waiting for backend...</h1>
+  <h1 id="users">Waiting for backend...</h1>
   <script>
-    fetch('http://127.0.0.1:5000/')
+    fetch('http://127.0.0.1:5000/', { method: "GET"})
     .then(response => response.json())
     .then(data => {
         document.getElementById('greeting').textContent = data.hello;
@@ -15,6 +16,15 @@
       .catch(err => {
         console.error('Error fetching:', err);
         document.getElementById('greeting').textContent = 'Error fetching greeting';
+      });
+    fetch('http://127.0.0.1:5000/users', { method: "GET"})
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('users').textContent = data.hello;
+      })
+      .catch(err => {
+        console.error('Error fetching:', err);
+        document.getElementById('users').textContent = 'Error fetching greeting';
       });
 </script>
 </body>
