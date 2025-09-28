@@ -56,7 +56,8 @@
     "noEmitOnError": true, // if there is an error don't create JS file
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+     "src/types.d.ts"
   ],
   "exclude": [
     "node_modules",
