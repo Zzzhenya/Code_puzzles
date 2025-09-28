@@ -1,2 +1,5 @@
 all: 
-	cd backend && npm run start
+	cd api-gateway && npm run start
+
+fclean:
+	cd api-gateway && rm -rf dist
