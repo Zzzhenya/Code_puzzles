@@ -197,6 +197,8 @@ a different dependency.
    ↓ HTTPS
 [NGINX (TLS, rate limiting, etc.)]
    ↓ HTTP (internal)
-[Fastify API Gateway (auth, routing, proxy via undici)]
+[Fastify API Gateway (auth, routing, proxy via undici/fetch)]
    ↓
 [Microservices]
+
+* https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
